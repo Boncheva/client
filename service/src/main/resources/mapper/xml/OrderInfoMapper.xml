@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.OrderInfo">
+        <id column="id" property="id"/>
+        <result column="hotel_id" property="hotelId"/>
+        <result column="house_type" property="houseType"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_type" property="userType"/>
+        <result column="price" property="price"/>
+        <result column="checkin_date" property="checkinDate"/>
+        <result column="status" property="status"/>
+        <result column="add_date" property="addDate"/>
+        <result column="real_checkin_date" property="realCheckinDate"/>
+        <result column="cancel_date" property="cancelDate"/>
+        <result column="modify_date" property="modifyDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="operate_user" property="operateUser"/>
+        <result column="operate_date" property="operateDate"/>
+        <result column="checkout_date" property="checkoutDate"/>
+        <result column="room_num" property="roomNum"/>
+        <result column="remark" property="remark"/>
+        <result column="check_date" property="checkDate"/>
+        <result column="check_user" property="checkUser"/>
+        <result column="check_reason" property="checkReason"/>
+        <result column="from_type" property="fromType"/>
+        <result column="ori_remark" property="oriRemark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, hotel_id, house_type, user_id, user_type, price, checkin_date, status, add_date, real_checkin_date, cancel_date, modify_date, deleted, operate_user, operate_date, checkout_date, room_num, remark, check_date, check_user, check_reason, from_type, ori_remark
+    </sql>
+    <select id="orderInfoList" resultType="com.yitu.hotel.model.entity.OrderInfo">
+        select b.user_name as userName,
+        b.sex as sex,
+        b.age as age,
+        h.hotel_name as hotelName,
+        h.district as district,
+        a.*
+        from order_info a
+        left join user b on a.user_id = b.id
+        left join hotel h on a.hotel_id = h.id
+        where 1=1
+        <if test="district!=null and district!=''">
+            and h.district = #{district}
+        </if>
+        <if test="street!=null and street!=''">
+            and h.street = #{street}
+        </if>
+        <if test="status!=null">
+            and a.status = #{status}
+        </if>
+        <if test="portType!=null and portType!=''">
+            and b.port_type = #{portType}
+        </if>
+        <if test="hotelType!=null and hotelType!=''">
+            and h.hotel_types like '%${hotelType}%'
+        </if>
+        <if test="checkinDate!=null and checkinDate!=''">
+            and a.checkin_date = #{checkinDate}
+        </if>
+        <if test="hotelName!=null and hotelName!=''">
+            and h.hotel_name = #{hotelName}
+        </if>
+        <if test="remark!=null and remark!=''">
+            and a.remark like '%${remark}%'
+        </if>
+        <if test="oriRemark!=null and oriRemark!=''">
+            and a.ori_remark like '%${oriRemark}%'
+        </if>
+    </select>
+
+</mapper>

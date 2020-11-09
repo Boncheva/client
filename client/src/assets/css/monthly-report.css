@@ -1,0 +1,134 @@
+@charset "utf-8";
+.fix{*zoom:1;}.fix:before,.fix:after{display:block; content:"clear"; height:0; clear:both; overflow:hidden; visibility:hidden;}
+.mt60{margin-top: 60px;}
+.inline-box{display: inline-block;}
+.text-align-r{text-align: right}
+.cover{height: 0;padding-bottom: 141.4%;background:url("../images/monthly-bg.png");background-size: auto 100%;position: relative;}
+.cover-contents{position: absolute;left: 0;right: 0;top: 0;bottom: 0;padding: 60px 63px;}
+.cover-contents .logo{padding: 15px 0 40px;}
+.cover-contents .logo img{width: 250px;height: auto;}
+.cover-contents .title{opacity: 0.6;font-family: DINAlternate-Bold;font-size: 36px;color: #E0F4FF;letter-spacing: -0.18px;line-height: 38px;}
+.cover-contents .name{font-family: PingFangSC-Semibold;font-size: 50px;color: #FFFFFF;letter-spacing: -1.63px;line-height: 64px;margin-top: 11px;}
+.cover-contents .time{font-size: 35px;color: #FFFFFF;line-height: 55px;margin-top: 46px;}
+.cover-contents .company{font-size: 14px;color: #FFFFFF;letter-spacing: -0.46px;line-height: 12px;}
+.monthly-logo{text-align: center;margin-top: 40px;}
+.newPage{page-break-after:always;}
+.monthly-contents-box{height: 0;padding-bottom: 141.4%;position: relative;}
+.monthly-contents{padding: 0 34px;position: absolute;left:0;top: 0;bottom: 0;right: 0;}
+.monthly-contents-header{position: absolute;right:34px;top: -30px;font-size: 12px;text-align: justify;color: #002727;}
+.monthly-contents-header .time{position: relative;top: 1px;}
+.monthly-contents-header .point{display: inline-block;width: 2px;height: 2px;background: #595757;border-radius: 50%;margin: 0 3px;position: relative;top: -2px}
+.monthly-contents-header .small-font{  -webkit-transform-origin-x: 0;-webkit-transform: scale(0.50);font-size: 6px;display: inline-block;position: relative;top: 1px;}
+.monthly-title{font-size: 22px;color: #1B2347;margin-top: 60px;margin-bottom: 30px;position: relative;}
+.monthly-title:before{content: '';position: absolute;left: -34px;top: 10px;width: 24px;height: 11px;background: #0D59B0;}
+.monthly-title:after{content: '';position: absolute;left: 230px;right: -34px;top: 10px;height: 11px;background: #0D59B0;}
+.title-first{font-size: 16px;color: #008EFF;font-weight: bold;margin-bottom: 22px;}
+.title-sub{font-size: 12px;color: #171C47;font-weight: bold;margin-bottom: 16px;}
+.circle-blue{width: 6px;height: 6px;border-radius: 50%;display: inline-block;margin-right: 5px;background: #008EFF;position: relative;top: -2px;}
+.circle-white{width: 6px;height: 6px;border-radius: 50%;display: inline-block;margin-right: 5px;background: #fff;position: relative;top: -2px;}
+.overall{margin-bottom: 30px;}
+.overall li{float: left;width: 25%;}
+.overall .item{padding: 14px 16px;border-radius: 6px;border: 1px solid #eee;margin: 0 10px;position: relative;}
+.overall li:first-child .item{background-image: linear-gradient(135deg, #F39800 0%, #FFF100 100%);box-shadow: 0 0 6px 0 rgba(241,243,251,0.60);}
+.overall li:nth-child(2) .item{background-image: linear-gradient(134deg, #3298FF 0%, #93CCFF 100%);}
+.overall li:nth-child(3) .item{background-image: linear-gradient(135deg, #F39800 0%, #FFF100 100%);}
+.overall li:nth-child(4) .item{background-image: linear-gradient(134deg, #3298FF 0%, #93CCFF 100%);}
+.overall li:first-child .item:after{content: '';position: absolute;left: 0;right: 0;top: 0;bottom: 0;background: url("../images/overall-icon01.png")no-repeat right;}
+.overall li:nth-child(2) .item:after{content: '';position: absolute;left: 0;right: 0;top: 0;bottom: 0;background: url("../images/overall-icon02.png")no-repeat right;}
+.overall li:nth-child(3) .item:after{content: '';position: absolute;left: 0;right: 0;top: 0;bottom: 0;background: url("../images/overall-icon03.png")no-repeat right;opacity: 0.4;}
+.overall li:nth-child(4) .item:after{content: '';position: absolute;left: 0;right: 0;top: 0;bottom: 0;background: url("../images/overall-icon04.png")no-repeat right;opacity: 0.4;}
+.overall .item .name{font-size: 11px;color: #fff;margin-bottom: 12px;}
+.overall .item .contents{font-size: 11px;color: #fff;}
+.overall .item .contents em{font-size: 22px;font-weight: bold;margin-right: 4px;}
+.company-table{width: 100%;margin-bottom: 30px;}
+.company-table th{background: #D6EBFF;height: 26px;line-height: 26px;text-align: center;font-size: 10px;color: #1E2B45;}
+.company-table tbody tr:nth-child(even){background: #F4F8FF;}
+.company-table td{line-height: 26px;font-size: 10px;color: #1E2B45;text-align: center;}
+.company-table th:first-child{text-align: left;padding-left: 24px;}
+.company-table td:first-child{text-align: left;padding-left: 24px;}
+.monthly-company-img{height: 400px;overflow: hidden;}
+.monthly-company-img img{width: 100%;}
+.monthly-progress .m-percent{color: #525C70;}
+.monthly-progress .m-percent-include{width: calc(100% - 70px);background: #F4F8FE;}
+.progress-container.monthly-progress .name{font-size: 10px;color: #A9AEC6;margin-bottom: 0;line-height: 16px;}
+
+.monthly-progress-number{font-size: 16px;color: #171C47;font-weight: bold;margin-top: 10px;}
+.monthly-progress-number em{color: #F8D838;}
+.monthly-progress-number .unit{font-size: 11px;color: #1E2B45;margin-left: 6px;font-weight: normal;}
+
+.monthly-echarts{position: relative;background: #F9FAFE;border-radius: 6px;margin: 15px;padding: 10px;}
+
+.monthly-departmental-indicators{}
+.monthly-departmental-indicators .monthly-progress{margin-bottom: 8px;padding-left: 50px;}
+.monthly-departmental-indicators .monthly-progress .name{position: absolute;left: 0;font-size: 10px;color: #818795;}
+.monthly-departmental-indicators .item{background: #F9FAFE;;border-radius: 6px;margin: 20px 15px;padding: 15px 30px;}
+.monthly-circle{position: relative;text-align: center;font-size: 12px;}
+.monthly-circle span{ position: absolute;bottom: 50%;left: 0;top: 50%;width: 100%;text-align: center;color: #1B204A;margin-top: -10px;}
+.monthly-circle-green span{color: #00D08D;}
+.monthly-circle-blue span{color: #5390FF}
+.monthly-circle-red span{color: #FF3933}
+.monthly-circle-orange span{color: #EEAA13}
+.monthly-circle-green2 span{color: #5DFFCB;}
+
+.monthly-capital-item{margin-bottom: 6px; background: #F9FAFE;border-radius: 4px;padding: 9px 11px;position: relative;}
+.monthly-box{padding: 15px;;border-radius: 4px;background: #3298FF;position: relative;}
+.monthly-box .arrow{width: 0;height: 0;border-style: solid;border-width: 10px 8px 0 8px;border-color: #3298FF transparent transparent transparent;position: absolute;left: 50%;margin-left: -4px;bottom: -10px;}
+.monthly-capital-item .monthly-progress-number{margin-top: 1px;}
+.monthly-capital-item .progress-container{position: absolute;left:135px; right: 10px;bottom: 11px ;}
+
+.timeline-item{ padding-bottom:20px; position:relative;margin-left: 90px;}
+.timeline .timeline-item:last-child{padding-bottom: 0;}
+.timeline .line{position: absolute; left: 4px;height: 100%; border-left: 1px solid #E7E9ED;display:inline-block;}
+.timeline .dot{position: absolute;background-color: #fff;border-radius: 50%;left: 0; width: 8px;height: 8px; display:inline-block;border: 1px solid #008EFF;z-index: 2}
+.timeline-item-cont{padding-left: 25px; position:relative;top:-3px;}
+.timeline-item-cont .date{font-size: 11px;color: #818895;margin-bottom: 6px;position: absolute;left: -80px;}
+.timeline-item-cont .text{padding: 10px;font-size: 11px;color: #171C47;text-align: justify;background: #F9FAFE; }
+.timeline-item:last-child .line{  border-left: 1px dashed #E7E9ED;}
+.timeline-card .text{font-size: 11px;color: #171C47;line-height: 16px;}
+
+.monthly-text{font-family: PingFangSC-Regular;line-height: 16px;color: #171C47;margin-top: 30px;}
+.monthly-text .title{font-size: 12px;color: #008EFF;line-height: 30px;font-weight: bold;margin-bottom: 10px;}
+.monthly-text .title .number{border: 1px solid #008EFF;display: inline-block;padding: 0 10px;margin-right: 10px;}
+.monthly-text .contents{color: #171C47;text-align: justify;line-height: 22px;margin-bottom: 30px;}
+.monthly-text .contents:last-child{padding-bottom: 60px;}
+.management-item{background-image: linear-gradient(134deg, #3298FF 0%, #93CCFF 100%);border-radius: 6px;color: #fff;padding-top: 10px;margin: 0 10px;}
+.management-item .progress-container .name{color: #C5DCFF;font-size: 10px;line-height: 10px;padding-left: 10px;}
+.management-item .monthly-progress .m-percent-include{background: transparent;width:100%;}
+.management-item .m-percent{font-size: 12px;color: #fff;bottom: 16px;right: 10px;}
+.management-item .monthly-progress-number{color: #fff;padding: 0 10px 5px;border-bottom: 1px solid rgba(0,0,0,0.07)}
+.management-item .monthly-progress-number .unit{color: #fff;}
+.management-item .m-percent-include{margin-bottom: -4px;}
+
+.catalogue{height: 0;padding-bottom: 141.4%;position: relative;}
+.catalogue .contents{padding: 0 50px;position: absolute;left: 0;right: 0;top: 0;bottom: 0;}
+.catalogue .heard-line{background: #008EFF;display: inline-block;width: 73px;height: 161px;}
+.catalogue .top{color: #008EFF;}
+
+.catalogue-item-top{height: 86px;line-height: 86px;position: relative;color: #008EFF;border-bottom: 2px solid #008EFF;}
+.catalogue-item-top .number{font-size: 72px;opacity: 0.2;z-index: -1;font-weight: bold;font-family: DINCond-Black;}
+.catalogue-item-top .title{font-size: 18px;line-height: 22px;padding:0 3px 8px;position: absolute;left: 0;right: 0;bottom: 0;font-weight: bold;background: #fff;}
+
+.catalogue-item-contents{margin-top: 20px;}
+.catalogue-item-contents li{line-height: 26px;position: relative;min-height: 26px;font-size: 12px;}
+.catalogue-item-contents li .title{display: inline-block;background: #fff;color: #171C47;z-index: 2;position: relative;padding-right: 5px;}
+.catalogue-item-contents li .line{position: absolute;left: 0;top: 13px;right: 30px;z-index: 1;height: 1px;border-top: 1px dashed #818795;}
+.catalogue-item-contents li .page-num{position: absolute;right: 0;color: #818795;}
+
+.monthly-contents-top{color: #008EFF;position: relative;height: 97px;padding-top: 85px;margin-bottom: 16px;}
+.monthly-contents-top .number{font-size: 84px;opacity: 0.2;line-height: 97px;font-weight: bold;}
+.monthly-contents-top .title{line-height: 28px;background: #fff;font-size: 20px;position: absolute;bottom: 0;left: 0;right: 250px;padding: 0 5px;}
+
+.monthly-bg02{background: url("../images/monthly-bg02.png")center bottom no-repeat;background-size: cover;}
+.monthly-contents-bg{padding: 30px 34px 50px;margin: 0 -34px;}
+.monthly-bg03{background: url("../images/monthly-bg03.png")center bottom no-repeat;background-size: cover;}
+.monthly-bg04{background: url("../images/monthly-bg04.png")center bottom no-repeat;background-size: cover;}
+.monthly-bg05{background: url("../images/monthly-bg05.png")center bottom no-repeat;background-size: cover;}
+
+.monthly-contents-bluebox{padding: 28px 15px 30px;background-image: linear-gradient(134deg, #3298FF 0%, #93CCFF 100%);border-radius: 6px; }
+.monthly-contents-bluebox .m-percent{color: #fff;}
+.monthly-contents-bluebox .progress-container .name{color:#C5DCFF;}
+.monthly-contents-bluebox .monthly-progress-number{color: #fff;}
+.monthly-contents-bluebox .monthly-progress-number .unit{color: #fff;}
+
+.monthly-page-num{width: 16px;height: 24px;position: absolute;left: 34px;bottom: 0;background: url("../images/monthly-page-num.png")no-repeat;font-size: 10px;color: #FFFFFF;line-height: 10px;}
+.monthly-page-num .num{width: 16px;text-align: center;display: inline-block;position: absolute;bottom: 5px;}

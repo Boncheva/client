@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.GovPersonLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.GovPersonLog">
+        <id column="id" property="id" />
+        <result column="log_date" property="logDate" />
+        <result column="hotel_id" property="hotelId" />
+        <result column="person_num" property="personNum" />
+        <result column="person_status" property="personStatus" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, log_date, hotel_id, person_num, person_status, update_user_id, update_time
+    </sql>
+
+</mapper>

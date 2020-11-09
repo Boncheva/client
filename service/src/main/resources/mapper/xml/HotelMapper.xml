@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.HotelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.Hotel">
+        <id column="id" property="id"/>
+        <result column="hotel_name" property="hotelName"/>
+        <result column="hotel_other_name" property="hotelOtherName"/>
+        <result column="hotel_types" property="hotelTypes"/>
+        <result column="address" property="address"/>
+        <result column="contract_user" property="contractUser"/>
+        <result column="contract_mobile" property="contractMobile"/>
+        <result column="district" property="district"/>
+        <result column="street" property="street"/>
+        <result column="house1_total_count" property="house1TotalCount"/>
+        <result column="house1_show_count" property="house1ShowCount"/>
+        <result column="house1_count" property="house1Count"/>
+        <result column="house1_control_count" property="house1ControlCount"/>
+        <result column="house1_price" property="house1Price"/>
+        <result column="house1_remark" property="house1Remark"/>
+        <result column="house2_total_count" property="house2TotalCount"/>
+        <result column="house2_show_count" property="house2ShowCount"/>
+        <result column="house2_count" property="house2Count"/>
+        <result column="house2_control_count" property="house2ControlCount"/>
+        <result column="house2_price" property="house2Price"/>
+        <result column="house2_remark" property="house2Remark"/>
+        <result column="house3_total_count" property="house3TotalCount"/>
+        <result column="house3_show_count" property="house3ShowCount"/>
+        <result column="house3_count" property="house3Count"/>
+        <result column="house3_control_count" property="house3ControlCount"/>
+        <result column="occupancy_today" property="occupancyToday"/>
+        <result column="check_out_today" property="checkOutToday"/>
+        <result column="house3_price" property="house3Price"/>
+        <result column="house3_remark" property="house3Remark"/>
+        <result column="remark" property="remark"/>
+        <result column="add_date" property="addDate"/>
+        <result column="modify_date" property="modifyDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="notshow" property="notshow"/>
+        <result column="hotel_username" property="hotelUsername"/>
+        <result column="hotel_password" property="hotelPassword"/>
+        <result column="url" property="url"/>
+        <result column="last_synch_date" property="lastSynchDate"/>
+        <result column="control_date" property="controlDate"/>
+        <result column="reserve_date" property="reserveDate"/>
+        <result column="is_report" property="isReport"/>
+        <result column="area_type" property="areaType"/>
+        <result column="house4_total_count" property="house4TotalCount"/>
+        <result column="house4_show_count" property="house4ShowCount"/>
+        <result column="house4_count" property="house4Count"/>
+        <result column="house4_control_count" property="house4ControlCount"/>
+        <result column="house4_price" property="house4Price"/>
+        <result column="house4_remark" property="house4Remark"/>
+        <result column="house5_total_count" property="house5TotalCount"/>
+        <result column="house5_show_count" property="house5ShowCount"/>
+        <result column="house5_count" property="house5Count"/>
+        <result column="house5_control_count" property="house5ControlCount"/>
+        <result column="house5_price" property="house5Price"/>
+        <result column="house5_remark" property="house5Remark"/>
+        <result column="house6_total_count" property="house6TotalCount"/>
+        <result column="house6_show_count" property="house6ShowCount"/>
+        <result column="house6_count" property="house6Count"/>
+        <result column="house6_control_count" property="house6ControlCount"/>
+        <result column="house6_price" property="house6Price"/>
+        <result column="house6_remark" property="house6Remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, hotel_name, hotel_other_name, hotel_types, address, contract_user, contract_mobile, district, street, house1_total_count, house1_show_count, house1_count, house1_control_count, house1_price, house1_remark, house2_total_count, house2_show_count, house2_count, house2_control_count, house2_price, house2_remark, house3_total_count, house3_show_count, house3_count, house3_control_count, occupancy_today, check_out_today, house3_price, house3_remark, remark, add_date, modify_date, deleted, notshow, hotel_username, hotel_password, url, last_synch_date, control_date, reserve_date, is_report, area_type, house4_total_count, house4_show_count, house4_count, house4_control_count, house4_price, house4_remark, house5_total_count, house5_show_count, house5_count, house5_control_count, house5_price, house5_remark, house6_total_count, house6_show_count, house6_count, house6_control_count, house6_price, house6_remark
+    </sql>
+    <select id="selectListGroupBydistrict" resultType="java.lang.String">
+        select district
+            from hotel
+            where district is not null and district != ''
+            group by district
+    </select>
+    <select id="selectListGroupByStreet" resultType="java.lang.String">
+        select street
+            from hotel
+            where district = #{district}
+              and street is not null
+              and street != ''
+            group by street
+    </select>
+    <select id="hotelInfoList" resultType="com.yitu.hotel.model.entity.Hotel">
+        select x.id,
+        x.hotel_name,
+        x.hotel_other_name,
+        x.hotel_types,
+        x.todayOrderCount,
+        x.todayCheckInCount,
+        x.todayCheckOutCount,
+        (x.totalCount - (x.todayOrderCount + x.todayCheckInCount))as todayRemindCount,
+        district,
+        address,
+        contract_user,
+        contract_mobile
+        from (select id,
+        hotel_name,
+        hotel_other_name,
+        hotel_types,
+        (select count(1)
+        from order_info
+        where hotel_id = hotel.id
+        and checkin_date = left(now(), 10)
+        and status = '2') as todayOrderCount,
+        (select count(1)
+        from order_info
+        where hotel_id = hotel.id
+        and real_checkin_date = left(now(), 10)
+        and status = '3') as todayCheckInCount,
+        (select count(1)
+        from order_info
+        where hotel_id = hotel.id
+        and checkout_date = left(now(), 10)
+        and status = '5') as todayCheckOutCount,
+        (select sum(house1_total_count + house2_total_count + house3_total_count + house4_total_count +
+        house5_total_count + house6_total_count)
+        from hotel b
+        where b.id = hotel.id) as totalCount,
+        district,
+        address,
+        contract_user,
+        contract_mobile
+        from hotel where 1=1
+        <if test="district!=null and district!=''">
+            and district = #{district}
+        </if>
+        <if test="street!=null and street!=''">
+            and street = #{street}
+        </if>
+        <if test="deleted!=null">
+            and deleted = #{deleted}
+        </if>
+        <if test="notshow!=null">
+            and notshow = #{notshow}
+        </if>
+        <if test="hotelTypes!=null and hotelTypes!=''">
+            and hotel_types like '%${hotelTypes}%'
+        </if>
+        <if test="hotelName!=null and hotelName!=''">
+            and hotel_name like '%${hotelName}%'
+        </if>
+        ) x;
+    </select>
+</mapper>
