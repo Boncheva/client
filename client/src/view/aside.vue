@@ -18,8 +18,7 @@
                 navList: [
                     {name: '/index/appUserMan', navItem: '申报用户管理'},
                     {name: 'orderBooking', navItem: '预定订单管理'},
-                    {name: 'hotelInfoMan', navItem: '酒店信息管理'},
-                    {name: 'hotelHosingSubV', navItem: '酒店房源监管'},
+                    {name: 'hotelInfoMan', navItem: '酒店信息管理'}
                 ]
             }
         }

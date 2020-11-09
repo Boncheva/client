@@ -22,11 +22,6 @@ const router = new VueRouter({
                 path: 'hotelInfoMan',
                 name: 'hotelInfoMan',
                 component: () => import('@/view/hotelInfoMan/hotelInfoMan.vue')
-            },
-            {
-                path: 'hotelHosingSubV',
-                name: 'hotelHosingSubV',
-                component: () => import('@/view/hotelHosingSubV/hotelHosingSubV.vue')
             }
         ]
     }, {
