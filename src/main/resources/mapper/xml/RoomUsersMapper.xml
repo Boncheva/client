@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.RoomUsersMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.RoomUsers">
+        <id column="id" property="id" />
+        <result column="user_name" property="userName" />
+        <result column="cert_type" property="certType" />
+        <result column="cert_no" property="certNo" />
+        <result column="age" property="age" />
+        <result column="main_request" property="mainRequest" />
+        <result column="type" property="type" />
+        <result column="user_id" property="userId" />
+        <result column="order_id" property="orderId" />
+        <result column="hs_check_date" property="hsCheckDate" />
+        <result column="hs_check_status" property="hsCheckStatus" />
+        <result column="report_path" property="reportPath" />
+        <result column="check_rg_status" property="checkRgStatus" />
+        <result column="check_rg_reason" property="checkRgReason" />
+        <result column="check_rg_date" property="checkRgDate" />
+        <result column="check_rg_user" property="checkRgUser" />
+        <result column="modify_date" property="modifyDate" />
+        <result column="check_status" property="checkStatus" />
+        <result column="check_reason" property="checkReason" />
+        <result column="check_date" property="checkDate" />
+        <result column="check_user" property="checkUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_name, cert_type, cert_no, age, main_request, type, user_id, order_id, hs_check_date, hs_check_status, report_path, check_rg_status, check_rg_reason, check_rg_date, check_rg_user, modify_date, check_status, check_reason, check_date, check_user
+    </sql>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.HotelGovLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.HotelGovLog">
+        <id column="id" property="id" />
+        <result column="hotel_id" property="hotelId" />
+        <result column="district" property="district" />
+        <result column="log_date" property="logDate" />
+        <result column="house1_control_count" property="house1ControlCount" />
+        <result column="house2_control_count" property="house2ControlCount" />
+        <result column="house3_control_count" property="house3ControlCount" />
+        <result column="gov_status" property="govStatus" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_time" property="updateTime" />
+        <result column="house4_control_count" property="house4ControlCount" />
+        <result column="house5_control_count" property="house5ControlCount" />
+        <result column="house6_control_count" property="house6ControlCount" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, hotel_id, district, log_date, house1_control_count, house2_control_count, house3_control_count, gov_status, create_time, update_user_id, update_time, house4_control_count, house5_control_count, house6_control_count
+    </sql>
+
+</mapper>

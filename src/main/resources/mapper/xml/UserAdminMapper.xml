@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.UserAdminMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.UserAdmin">
+        <id column="id" property="id" />
+        <result column="user_name" property="userName" />
+        <result column="passwd" property="passwd" />
+        <result column="user_pic" property="userPic" />
+        <result column="region_name" property="regionName" />
+        <result column="modify_date" property="modifyDate" />
+        <result column="login_date" property="loginDate" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_name, passwd, user_pic, region_name, modify_date, login_date, deleted
+    </sql>
+
+</mapper>

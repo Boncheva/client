@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.User">
+        <id column="id" property="id" />
+        <result column="id_code" property="idCode" />
+        <result column="passwd" property="passwd" />
+        <result column="user_name" property="userName" />
+        <result column="sex" property="sex" />
+        <result column="birthday" property="birthday" />
+        <result column="age" property="age" />
+        <result column="mobile" property="mobile" />
+        <result column="mobile2" property="mobile2" />
+        <result column="nationality" property="nationality" />
+        <result column="cert_type" property="certType" />
+        <result column="cert_no" property="certNo" />
+        <result column="port_type" property="portType" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="area" property="area" />
+        <result column="address" property="address" />
+        <result column="area_14day_in" property="area14dayIn" />
+        <result column="report_path" property="reportPath" />
+        <result column="enter_reason" property="enterReason" />
+        <result column="base_illness" property="baseIllness" />
+        <result column="base_illness_type" property="baseIllnessType" />
+        <result column="special_demand" property="specialDemand" />
+        <result column="nation" property="nation" />
+        <result column="faith" property="faith" />
+        <result column="shy_count" property="shyCount" />
+        <result column="reg_date" property="regDate" />
+        <result column="modify_date" property="modifyDate" />
+        <result column="login_date" property="loginDate" />
+        <result column="deleted" property="deleted" />
+        <result column="fill_status" property="fillStatus" />
+        <result column="hs_check_date" property="hsCheckDate" />
+        <result column="hs_check_status" property="hsCheckStatus" />
+        <result column="contract_user" property="contractUser" />
+        <result column="contract_mobile" property="contractMobile" />
+        <result column="check_status" property="checkStatus" />
+        <result column="check_reason" property="checkReason" />
+        <result column="check_date" property="checkDate" />
+        <result column="check_user" property="checkUser" />
+        <result column="hs_rg_check_status" property="hsRgCheckStatus" />
+        <result column="hs_rg_check_reason" property="hsRgCheckReason" />
+        <result column="hs_rg_check_date" property="hsRgCheckDate" />
+        <result column="hs_rg_check_user" property="hsRgCheckUser" />
+        <result column="sq_check_status" property="sqCheckStatus" />
+        <result column="sq_check_reason" property="sqCheckReason" />
+        <result column="sq_check_date" property="sqCheckDate" />
+        <result column="sq_check_user" property="sqCheckUser" />
+        <result column="area_type" property="areaType" />
+        <result column="from_type" property="fromType" />
+        <result column="user_type" property="userType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, id_code, passwd, user_name, sex, birthday, age, mobile, mobile2, nationality, cert_type, cert_no, port_type, province, city, area, address, area_14day_in, report_path, enter_reason, base_illness, base_illness_type, special_demand, nation, faith, shy_count, reg_date, modify_date, login_date, deleted, fill_status, hs_check_date, hs_check_status, contract_user, contract_mobile, check_status, check_reason, check_date, check_user, hs_rg_check_status, hs_rg_check_reason, hs_rg_check_date, hs_rg_check_user, sq_check_status, sq_check_reason, sq_check_date, sq_check_user, area_type, from_type, user_type
+    </sql>
+
+</mapper>
