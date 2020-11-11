@@ -37,6 +37,14 @@
         },
         methods: {
             login() {
+                if (this.mobile == null || this.mobile == '') {
+                    this.$message.error("请填写手机号")
+                    return;
+                }
+                if (this.passwd == null || this.passwd == '') {
+                    this.$message.error("请填写用户密码")
+                    return;
+                }
                 this.$http.post('http://127.0.0.1:8888/admin/login', {
                     mobile: this.mobile,
                     passwd: this.passwd
