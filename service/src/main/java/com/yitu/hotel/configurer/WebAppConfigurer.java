@@ -15,7 +15,7 @@ public class WebAppConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 可添加多个
-        registry.addInterceptor(myInterceptor).addPathPatterns("/**").excludePathPatterns("/admin/login");
+        registry.addInterceptor(myInterceptor).addPathPatterns("/**").excludePathPatterns("/admin/login","/order/export");
     }
 
 }
