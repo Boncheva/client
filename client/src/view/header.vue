@@ -1,14 +1,24 @@
 <template>
     <div>
-        <span style="text-align: left">隔离酒店 | 预订系统</span>
-        <span style="text-align: right">张小明</span>
-        <a href="#">退出登录</a>
+        <span style="text-align: left">隔离酒店 | 预订系统     </span>
+        <span style="text-align: right">{{this.$route.query.userName}}</span>
+        <el-button href="#" @click="signOut"> 退出登录</el-button>
     </div>
 </template>
 
 <script>
     export default {
-        name: "header"
+        name: "header",
+        methods: {
+            signOut() {
+                this.$http.post('http://127.0.0.1:8888/admin/signOut').then(function (res) {
+                    if (res.body.status == 200) {
+                        localStorage.setItem('Authorization', null);
+                        this.$router.push({path: 'login'});
+                    }
+                })
+            }
+        }
     }
 </script>
 
