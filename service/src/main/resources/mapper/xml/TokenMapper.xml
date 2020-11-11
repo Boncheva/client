@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitu.hotel.mapper.TokenMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.Token">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="build_time" property="buildTime"/>
+        <result column="token" property="token"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, build_time, token
+    </sql>
+
+</mapper>
