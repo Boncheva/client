@@ -1,8 +1,14 @@
 package com.yitu.hotel.model.aspect;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yitu.hotel.mapper.AdminUserMapper;
+import com.yitu.hotel.mapper.TokenMapper;
+import com.yitu.hotel.model.entity.AdminUser;
 import com.yitu.hotel.model.entity.OperationLog;
+import com.yitu.hotel.model.entity.Token;
 import com.yitu.hotel.service.OperationLogService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,6 +35,12 @@ public class SysLogAspect {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private TokenMapper tokenMapper;
+
+    @Autowired
+    private AdminUserMapper adminUserMapper;
+
     @Pointcut("execution(public * com.yitu.hotel.controller.*Controller.*(..))")
     public void logPointCut() {
     }
@@ -38,11 +50,19 @@ public class SysLogAspect {
         try {
             saveLog(point);
         } catch (Exception e) {
+            System.out.println(e);
         }
         return point.proceed();
     }
 
     private void saveLog(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
+        String token = request.getHeader("Authorization");
+        Token tokenBean = null;
+        if (StringUtils.isNotBlank(token)) {
+            QueryWrapper qw = new QueryWrapper();
+            qw.eq("token", token);
+            tokenBean = tokenMapper.selectOne(qw);
+        }
         String ip = getIpAddress();//ip地址
         Class<?> targetCls = joinPoint.getTarget().getClass();
         RequestMapping annotation = targetCls.getAnnotation(RequestMapping.class);
@@ -63,9 +83,16 @@ public class SysLogAspect {
         String targetMethodParams = Arrays.toString(joinPoint.getArgs());
         LocalDateTime requestTime = LocalDateTime.now();
         OperationLog ol = new OperationLog();
+        ol.setReqApi(url);
+        if (null != tokenBean) {
+            String userId = String.valueOf(tokenBean.getUserId());
+            AdminUser adminUser = adminUserMapper.selectById(userId);
+            ol.setUserId(adminUser.getId());
+            ol.setUserName("我是" + adminUser.getUserName());
+            ol.setReqApi(url + ",token:" + token);
+        }
         ol.setIp(ip);
         ol.setDate(requestTime);
-        ol.setReqApi(url);
         ol.setReqParams(targetMethodParams);
         ol.setName(name);
         operationLogService.saveLog(ol);
