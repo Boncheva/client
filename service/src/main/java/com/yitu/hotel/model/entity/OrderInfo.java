@@ -3,8 +3,6 @@ package com.yitu.hotel.model.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
-import java.time.LocalDate;
-
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.time.LocalDateTime;
@@ -67,8 +65,15 @@ public class OrderInfo implements Serializable {
      * 入住日期
      */
     @TableField("checkin_date")
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDate checkinDate;
+    private String checkinDate;
+
+    public String getCheckinDate() {
+        return checkinDate;
+    }
+
+    public void setCheckinDate(String checkinDate) {
+        this.checkinDate = checkinDate;
+    }
 
     /**
      * 状态: 0-预订待审核、1-审核未通过、2-已预订、3-入住、4-爽约、5-退房、9-取消
@@ -316,14 +321,6 @@ public class OrderInfo implements Serializable {
 
     public void setPrice(String price) {
         this.price = price;
-    }
-
-    public LocalDate getCheckinDate() {
-        return checkinDate;
-    }
-
-    public void setCheckinDate(LocalDate checkinDate) {
-        this.checkinDate = checkinDate;
     }
 
     public Integer getStatus() {

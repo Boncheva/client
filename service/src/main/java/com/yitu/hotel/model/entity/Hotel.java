@@ -256,13 +256,13 @@ public class Hotel implements Serializable {
      * 管控时间
      */
     @TableField("control_date")
-    private LocalDateTime controlDate;
+    private String controlDate;
 
     /**
      * 可预约日期
      */
     @TableField("reserve_date")
-    private LocalDateTime reserveDate;
+    private String reserveDate;
 
     /**
      * 区政府是否上报
@@ -740,19 +740,19 @@ public class Hotel implements Serializable {
         this.lastSynchDate = lastSynchDate;
     }
 
-    public LocalDateTime getControlDate() {
+    public String getControlDate() {
         return controlDate;
     }
 
-    public void setControlDate(LocalDateTime controlDate) {
+    public void setControlDate(String controlDate) {
         this.controlDate = controlDate;
     }
 
-    public LocalDateTime getReserveDate() {
+    public String getReserveDate() {
         return reserveDate;
     }
 
-    public void setReserveDate(LocalDateTime reserveDate) {
+    public void setReserveDate(String reserveDate) {
         this.reserveDate = reserveDate;
     }
 

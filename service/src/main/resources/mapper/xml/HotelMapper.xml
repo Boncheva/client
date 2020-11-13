@@ -96,11 +96,16 @@
         district,
         address,
         contract_user,
-        contract_mobile
+        contract_mobile,
+        remark,
+        hotel_password,
+        hotel_username
         from (select id,
         hotel_name,
         hotel_other_name,
         hotel_types,
+        hotel_password,
+        hotel_username,
         (select count(1)
         from order_info
         where hotel_id = hotel.id
@@ -123,7 +128,8 @@
         district,
         address,
         contract_user,
-        contract_mobile
+        contract_mobile,
+        remark
         from hotel where 1=1
         <if test="district!=null and district!=''">
             and district = #{district}

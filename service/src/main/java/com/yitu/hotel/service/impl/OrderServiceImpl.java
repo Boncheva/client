@@ -148,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
                 orderInfo.setUserId(userId);
                 orderInfo.setUserType(userType);
                 orderInfo.setPrice(price);
-                orderInfo.setCheckinDate(checkinDate);
+//                orderInfo.setCheckinDate(checkinDate);
                 orderInfo.setAddDate(addDate);
                 orderInfo.setRealCheckinDate(realCheckinDate);
                 orderInfo.setCancelDate(cancelDate);

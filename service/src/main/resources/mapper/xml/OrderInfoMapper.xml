@@ -60,7 +60,7 @@
             and h.hotel_types like '%${hotelType}%'
         </if>
         <if test="checkinDate!=null and checkinDate!=''">
-            and a.checkin_date = #{checkinDate}
+            and left(a.checkin_date,10) = left(#{checkinDate},10)
         </if>
         <if test="hotelName!=null and hotelName!=''">
             and h.hotel_name = #{hotelName}
