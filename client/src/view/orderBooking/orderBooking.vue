@@ -213,6 +213,11 @@
                                 </el-select>
                             </td>
                             <td>
+                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间">
+
+                                </el-date-picker>
+                            </td>
+                            <td>
                                 <span>价格: </span>
                                 <el-input v-model="housePriceUpt" type="number"></el-input>
                             </td>
@@ -549,20 +554,23 @@
                 }))
             },
             orderInfoList() {
-                console.log(this.checkinDate);
+                // console.log(this.checkinDate);
                 this.$http.post('http://127.0.0.1:8888/order/list', {
                     district: this.district,
                     street: this.street,
                     status: this.status,
                     portType: this.portType,
                     hotelType: this.hotelType,
-                    'checkinDate': this.checkinDate,
                     hotelName: this.hotelName,
+                    checkinDate: (this.checkinDate == null) || (this.checkinDate == '') ? null : this.$moment(this.checkinDate).format('YYYY-MM-DD'),
                     remark: this.remark,
                     oriRemark: this.oriRemark
                 }, {emulateJSON: true}).then(function (res) {
                     this.tableData = res.body.data;
                     for (let i = 0; i < this.tableData.length; i++) {
+                        if (this.tableData[i].checkinDate != null) {
+                            this.tableData[i].checkinDate = this.tableData[i].checkinDate.substring(0, 10);
+                        }
                         let sex = this.tableData[i].sex;
                         if (sex == '0') {
                             this.tableData[i].sex = '男'
@@ -627,11 +635,12 @@
                         id: this.id,
                         hotelId: this.hotelIdUpt,
                         houseType: this.houseTypeUpt,
+                        checkinDate: (this.checkinDateUpt == null) || (this.checkinDateUpt == '') ? null : this.$moment(this.checkinDateUpt).format('YYYY-MM-DD'),
                         price: this.housePriceUpt,
                         status: this.statusUpt,
                         deleted: this.deletedUpt,
                         roomNum: this.roomNumUpt,
-                        remakeUpt: this.remark,
+                        remark: this.remakeUpt,
                         fromType: this.fromTypeUpt
                     },
                     {
@@ -643,6 +652,7 @@
                         this.$message.error("修改失败")
                     }
                 })
+                this.orderInfoList();
                 this.dialogVisibleUp = false;
             },
             houseTypeSelect(houseTypeUpt) {

@@ -221,22 +221,6 @@
                     <el-input v-model="remarkAdd"></el-input>
                 </td>
                 <td>
-                    添加时间：
-                    <el-date-picker
-                            v-model="addDateAdd"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    更新时间：
-                    <el-date-picker
-                            v-model="modifyDateAdd"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
                     是否删除：
                     <el-select v-model="deletedAdd">
                         <el-option label="未删除" value="0"></el-option>
@@ -266,14 +250,6 @@
                     管控时间：
                     <el-date-picker
                             v-model="controlDateAdd"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    可预约日期：
-                    <el-date-picker
-                            v-model="reserveDateAdd"
                             type="date"
                             placeholder="选择日期">
                     </el-date-picker>
@@ -381,40 +357,10 @@
                     备注：
                     <el-input v-model="remarkUpdate"></el-input>
                 </td>
-                <td>
-                    添加时间：
-                    <el-date-picker
-                            v-model="addDateUpdate"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    更新时间：
-                    <el-date-picker
-                            v-model="modifyDateUpdate"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    是否删除：
-                    <el-select v-model="deletedUpdate">
-                        <el-option label="未删除" value="0"></el-option>
-                        <el-option label="已删除" value="1"></el-option>
-                    </el-select>
-                </td>
             </tr>
             <tr>
             </tr>
             <tr>
-                <td>
-                    是否展示：
-                    <el-select v-model="notshowUpdate">
-                        <el-option label="展示" value="0"></el-option>
-                        <el-option label="不展示" value="1"></el-option>
-                    </el-select>
-                </td>
                 <td>
                     酒店登陆账号：
                     <el-input v-model="hotelUsernameUpdate"></el-input>
@@ -422,54 +368,6 @@
                 <td>
                     酒店登陆密码：
                     <el-input v-model="hotelPasswordUpdate"></el-input>
-                </td>
-                <td>
-                    管控时间：
-                    <el-date-picker
-                            v-model="controlDateUpdate"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    可预约日期：
-                    <el-date-picker
-                            v-model="reserveDateUpdate"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    区政府是否上报：
-                    <el-select v-model="isReportUpdate">
-                        <el-option label="否" value="0"></el-option>
-                        <el-option label="是" value="1"></el-option>
-                    </el-select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    可预约日期：
-                    <el-date-picker
-                            v-model="reserveDateUpdate"
-                            type="date"
-                            placeholder="选择日期">
-                    </el-date-picker>
-                </td>
-                <td>
-                    区政府是否上报：
-                    <el-select v-model="isReportUpdate">
-                        <el-option label="否" value="0"></el-option>
-                        <el-option label="是" value="1"></el-option>
-                    </el-select>
-                </td>
-                <td>
-                    房源：
-                    <el-select v-model="areaTypeUpdate">
-                        <el-option label="深圳房源" value="1"></el-option>
-                        <el-option label="珠海房源" value="2"></el-option>
-                        <el-option label="其他城市" value="3"></el-option>
-                    </el-select>
                 </td>
             </tr>
         </table>
@@ -708,9 +606,6 @@
 
                 this.districtUpdate = row.district,
                     this.streetUpdate = row.street,
-                    this.deletedUpdate = row.deleted,
-                    this.notshowUpdate = row.notshow,
-                    this.isReportUpdate = row.isReport,
                     this.areaTypeUpdate = row.areaType,
                     this.hotelNameUpdate = row.hotelName,
                     this.hotelOtherNameUpdate = row.hotelOtherName,
@@ -718,8 +613,6 @@
                     this.contractMobileUpdate = row.contractMobile,
                     this.addressUpdate = row.address,
                     this.remarkUpdate = row.remark,
-                    this.addDateUpdate = row.addDate,
-                    this.modifyDateUpdate = row.modifyDate,
                     this.hotelUsernameUpdate = row.hotelUsername,
                     this.hotelPasswordUpdate = row.hotelPassword,
                     this.controlDateUpdate = row.controlDate,
@@ -763,6 +656,10 @@
                 this.resetAllocation();
             },
             addHotelInfo() {
+                if (this.hotelTypeAdd == null || this.hotelTypeAdd == '') {
+                    this.$message.error("请选择酒店类型")
+                    return;
+                }
                 let hotelTypes = "";
                 if (this.hotelTypeAddList.length > 0) {
                     let length = this.hotelTypeAddList.length;
@@ -792,12 +689,10 @@
                     contractMobile: this.contractMobileAdd,
                     address: this.addressAdd,
                     remark: this.remarkAdd,
-                    addDate: this.addDateAdd,
-                    modifyDate: this.modifyDateAdd,
                     hotelUsername: this.hotelUsernameAdd,
                     hotelPassword: this.hotelPasswordAdd,
-                    controlDate: this.controlDateAdd,
-                    reserveDate: this.reserveDateAdd
+                    controlDate: (this.controlDateAdd == null) || (this.controlDateAdd == '') ? null : this.$moment(this.controlDateAdd).format('YYYY-MM-DD'),
+                    reserveDate: (this.reserveDateAdd == null) || (this.reserveDateAdd == '') ? null : this.$moment(this.reserveDateAdd).format('YYYY-MM-DD'),
                 }, {emulateJSON: true}).then(function (res) {
                     if (res.status == 200) {
                         this.$message.success("新增成功")
@@ -847,28 +742,22 @@
                         }
                     }
                 }
-                this.$http.post('http://127.0.0.1:8888/hotel/info/update', {
-                    id: this.updateId,
-                    hotelTypes: hotelTypes,
-                    district: this.districtUpdate,
-                    street: this.streetUpdate,
-                    deleted: this.deletedUpdate,
-                    notshow: this.notshowUpdate,
-                    isReport: this.isReportUpdate,
-                    areaType: this.areaTypeUpdate,
-                    hotelName: this.hotelNameUpdate,
-                    hotelOtherName: this.hotelOtherNameUpdate,
-                    contractUser: this.contractUserUpdate,
-                    contractMobile: this.contractMobileUpdate,
-                    address: this.addressUpdate,
-                    remark: this.remarkUpdate,
-                    addDate: this.addDateUpdate,
-                    modifyDate: this.modifyDateUpdate,
-                    hotelUsername: this.hotelUsernameUpdate,
-                    hotelPassword: this.hotelPasswordUpdate,
-                    controlDate: this.controlDateUpdate,
-                    reserveDate: this.reserveDateUpdate
-                }, {emulateJSON: true}).then(function (res) {
+                let data = {
+                    id: this.updateId
+                };
+                data.hotelName = this.hotelNameUpdate;
+                data.hotelOtherName = this.hotelOtherNameUpdate;
+                data.hotelTypes = hotelTypes;
+                data.district = this.districtUpdate;
+                data.street = this.streetUpdate;
+                data.areaType = this.areaTypeUpdate;
+                data.contractUser = this.contractUserUpdate;
+                data.contractMobile = this.contractMobileUpdate;
+                data.address = this.addressUpdate;
+                data.hotelUsername = this.hotelUsernameUpdate;
+                data.hotelPassword = this.hotelPasswordUpdate;
+                data.remark = this.remarkUpdate;
+                this.$http.post('http://127.0.0.1:8888/hotel/info/update', data, {emulateJSON: true}).then(function (res) {
                     if (res.status == 200) {
                         this.$message.success("修改成功")
                     } else {

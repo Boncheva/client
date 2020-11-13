@@ -9,6 +9,7 @@ import './assets/css/monthly-report.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import VueResource from 'vue-resource'
 import store from './store/index'
+import moment from 'moment'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
@@ -18,6 +19,8 @@ new Vue({
     store,
     render: h => h(App)
 }).$mount('#app')
+
+Vue.prototype.$moment = moment;//赋值使用
 
 // 添加请求拦截器，在请求头中加token
 Vue.http.interceptors.push((request, next) => {
