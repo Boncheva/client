@@ -99,13 +99,23 @@
         contract_mobile,
         remark,
         hotel_password,
-        hotel_username
+        hotel_username,
+        deleted,
+        is_report,
+        area_type,
+        notshow,
+        street
         from (select id,
         hotel_name,
         hotel_other_name,
         hotel_types,
         hotel_password,
         hotel_username,
+        deleted,
+        is_report,
+        area_type,
+        notshow,
+        street,
         (select count(1)
         from order_info
         where hotel_id = hotel.id
