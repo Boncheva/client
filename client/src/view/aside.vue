@@ -17,8 +17,8 @@
             return {
                 navList: [
                     {name: '/index/appUserMan', navItem: '申报用户管理'},
-                    {name: 'orderBooking', navItem: '预定订单管理'},
-                    {name: 'hotelInfoMan', navItem: '酒店信息管理'}
+                    {name: '/index/orderBooking', navItem: '预定订单管理'},
+                    {name: '/index/hotelInfoMan', navItem: '酒店信息管理'}
                 ]
             }
         }
@@ -28,6 +28,6 @@
 <style lang="scss">
     .aside-wrap {
         min-height: 100vh;
-        background: #0D59B0;
+        background: #b02128;
     }
 </style>

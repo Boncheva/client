@@ -97,7 +97,7 @@
 
                 <div class="supervision-list-table">
                     <el-table
-                            :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                            :data="tableData"
                             style="width: 100%"
                             @selection-change="handleSelectionChange"
                             border>
@@ -186,14 +186,15 @@
                         </el-table-column>
                     </el-table>
                     <div class="block">
+                        <span class="demonstration"></span>
                         <el-pagination
                                 @size-change="handleSizeChange"
                                 @current-change="handleCurrentChange"
-                                :page-sizes="[5, 10, 20, 40]"
                                 :current-page="currentPage"
+                                :page-sizes="[10, 20, 30, 40, 50]"
                                 :page-size="pageSize"
                                 layout="total, sizes, prev, pager, next, jumper"
-                                :total="tableData.length">
+                                :total="totalCount">
                         </el-pagination>
                     </div>
                 </div>
@@ -479,8 +480,6 @@
                 street: null,
                 portType: null,
                 orderId: null,
-                currentPage: 1,
-                pageSize: 10,
                 dialogVisibleUp: false,
                 multipleSelection: [],
                 dialogVisible: false,
@@ -512,16 +511,25 @@
                 hotelInfoListMt: null,
                 dialogVisibleMt: false,
                 selectionListMt: [],
+
+                pageSize: 10,    //    每页的数据
+                currentPage: 1,//第几页
+                totalCount: 1,//总条数 这些数据虽然后面会赋值为后端返回的数，但是最好不要为空
             }
         },
         methods: {
-            // 初始页currentPage、初始每页数据数pagesize和数据data
-            handleSizeChange: function (size) {
-                this.pageSize = size;
+            //每页显示的条数
+            handleSizeChange(val) {
+                this.pageSize = val
+                this.orderInfoList(val, 1)
+                this.currentPage = 1
             },
-            handleCurrentChange: function (currentPage) {
-                this.currentPage = currentPage;
+            //显示第几页
+            handleCurrentChange(val) {
+                this.currentPage = val
+                this.orderInfoList(this.pageSize, val)
             },
+
             getHotelTypesList() {
                 this.$http.get('http://127.0.0.1:8888/config/list', {params: {parentId: 1005}}).then(function (res) {
                     this.hotelTypesList = res.body.data;
@@ -552,9 +560,9 @@
                     this.hotelInfoListMt = res.body.data;
                 }))
             },
-            orderInfoList() {
+            orderInfoList(pageSize, pageNum) {
                 // console.log(this.checkinDate);
-                this.$http.post('http://127.0.0.1:8888/order/list', {
+                let data = {
                     district: this.district,
                     street: this.street,
                     status: this.status,
@@ -564,8 +572,17 @@
                     checkinDate: (this.checkinDate == null) || (this.checkinDate == '') ? null : this.$moment(this.checkinDate).format('YYYY-MM-DD'),
                     remark: this.remark,
                     oriRemark: this.oriRemark
-                }, {emulateJSON: true}).then(function (res) {
-                    this.tableData = res.body.data;
+                }
+                if (pageNum != null && pageSize != null) {
+                    data.pageNum = pageNum;
+                    data.pageSize = pageSize;
+                } else {
+                    data.pageNum = this.currentPage;
+                    data.pageSize = this.pageSize;
+                }
+                this.$http.post('http://127.0.0.1:8888/order/list', data, {emulateJSON: true}).then(function (res) {
+                    this.tableData = res.body.data.list;
+                    this.totalCount = res.body.data.total
                     for (let i = 0; i < this.tableData.length; i++) {
                         if (this.tableData[i].checkinDate != null) {
                             this.tableData[i].checkinDate = this.tableData[i].checkinDate.substring(0, 10);
@@ -850,7 +867,10 @@
         mounted() {
             this.getHotelTypesList();
             this.getDistrictList();
-        }
+        },
+        created() {
+            this.orderInfoList(this.pageSize, this.currentPage)
+        },
     }
 
 

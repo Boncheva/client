@@ -54,7 +54,7 @@
             <button class="layui-btn layui-btn-normal layui-btn-sm" @click="openAdd">新增</button>
             <div class="supervision-list-table">
                 <el-table
-                        :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                        :data="tableData"
                         style="width: 100%">
                     <el-table-column
                             prop="hotelName"
@@ -133,15 +133,19 @@
                     </el-table-column>
                 </el-table>
                 <div class="block">
-                    <el-pagination
-                            @size-change="handleSizeChange"
-                            @current-change="handleCurrentChange"
-                            :page-sizes="[5, 10, 20, 40]"
-                            :current-page="currentPage"
-                            :page-size="pageSize"
-                            layout="total, sizes, prev, pager, next, jumper"
-                            :total="tableData.length">
-                    </el-pagination>
+                    <div class="block">
+                        <span class="demonstration"></span>
+                        <el-pagination
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange"
+                                :current-page="currentPage"
+                                :page-sizes="[10, 20, 30, 40, 50]"
+                                :page-size="pageSize"
+                                layout="total, sizes, prev, pager, next, jumper"
+                                :total="totalCount">
+                        </el-pagination>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -483,8 +487,6 @@
                 street: null,
                 portType: null,
                 notshow: null,
-                currentPage: 1,
-                pageSize: 10,
                 dialogVisibleAdd: false,
                 dialogVisibleUpdate: false,
                 dialogVisibleAOH: false,
@@ -546,16 +548,26 @@
                 hotelTypeUpdateIdList: null,
 
                 allocationId: null,
+
+                pageSize: 10,    //    每页的数据
+                currentPage: 1,//第几页
+                totalCount: 1,//总条数 这些数据虽然后面会赋值为后端返回的数，但是最好不要为空
             }
         },
         methods: {
-            // 初始页currentPage、初始每页数据数pagesize和数据data
-            handleSizeChange: function (size) {
-                this.pageSize = size;
+            //每页显示的条数
+            handleSizeChange(val) {
+                this.pageSize = val
+                this.hotelInfoList(val, 1)
+                this.currentPage = 1
             },
-            handleCurrentChange: function (currentPage) {
-                this.currentPage = currentPage;
+            //显示第几页
+            handleCurrentChange(val) {
+                this.currentPage = val
+                this.hotelInfoList(this.pageSize, val)
             },
+
+
             getHotelTypesList() {
                 this.$http.get('http://127.0.0.1:8888/config/list', {params: {parentId: 1005}}).then(function (res) {
                     this.hotelTypesList = res.body.data;
@@ -593,16 +605,25 @@
                     this.hotelTypes = null,
                     this.hotelName = null
             },
-            hotelInfoList() {
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', {
+            hotelInfoList(pageSize, pageNum) {
+                let data = {
                     district: this.district,
                     street: this.street,
                     deleted: this.deleted,
                     notshow: this.notshow,
                     hotelTypes: this.hotelTypes,
-                    hotelName: this.hotelName
-                }, {emulateJSON: true}).then(function (res) {
-                    this.tableData = res.body.data;
+                    hotelName: this.hotelName,
+                }
+                if (pageNum != null && pageSize != null) {
+                    data.pageNum = pageNum;
+                    data.pageSize = pageSize;
+                } else {
+                    data.pageNum = this.currentPage;
+                    data.pageSize = this.pageSize;
+                }
+                this.$http.post('http://127.0.0.1:8888/hotel/info/list', data, {emulateJSON: true}).then(function (res) {
+                    this.tableData = res.body.data.list;
+                    this.totalCount = res.body.data.total
                     this.getHotelTypesList();
                     let list = this.hotelTypesList;
                     this.tableData.map((item => {
@@ -921,7 +942,10 @@
         mounted() {
             this.getHotelTypesList();
             this.getDistrictList();
-        }
+        },
+        created() {
+            this.hotelInfoList(this.pageSize, this.currentPage)
+        },
     }
 </script>
 

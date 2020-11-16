@@ -72,7 +72,7 @@
 
                 <div class="supervision-list-table">
                     <el-table
-                            :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+                            :data="tableData"
                             style="width: 100%">
                         <el-table-column
                                 prop="certType"
@@ -151,14 +151,15 @@
                         </el-table-column>
                     </el-table>
                     <div class="block">
+                        <span class="demonstration"></span>
                         <el-pagination
                                 @size-change="handleSizeChange"
                                 @current-change="handleCurrentChange"
-                                :page-sizes="[5, 10, 20, 40]"
                                 :current-page="currentPage"
+                                :page-sizes="[10, 20, 30, 40, 50]"
                                 :page-size="pageSize"
                                 layout="total, sizes, prev, pager, next, jumper"
-                                :total="tableData.length">
+                                :total="totalCount">
                         </el-pagination>
                     </div>
                 </div>
@@ -262,131 +263,6 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="同住人信息" name="second">
-                    <!--                    <div class="layui-tab-item ">-->
-                    <!--                    <table class="layui-table detail-table">-->
-                    <!--                        <tbody>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>姓名：</label>-->
-                    <!--                                <span> 张三 </span></td>-->
-                    <!--                            <td><label>年龄：</label>-->
-                    <!--                                <span>22</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>证件类型：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                            <td><label>证件号码：</label>-->
-                    <!--                                <span>H2398423942</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸检测日期：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸检测结果：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸报告：</label>-->
-                    <!--                                <a href="" class="color-blue-006">查看</a></td>-->
-                    <!--                        </tr>-->
-                    <!--                        </tbody>-->
-                    <!--                    </table>-->
-                    <!--                    <table class="layui-table detail-table">-->
-                    <!--                        <thead>-->
-                    <!--                        <th colspan="2"><strong>公安审核</strong></th>-->
-                    <!--                        </thead>-->
-                    <!--                        <tbody>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>审核状态：</label>-->
-                    <!--                                <span class="color-green-1ac"> 审核通过 </span></td>-->
-                    <!--                            <td><label>审核原因：</label>-->
-                    <!--                                <span>原因描述</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>审核时间：</label>-->
-                    <!--                                <span> 2020-08-01 </span></td>-->
-                    <!--                            <td><label>审核人：</label>-->
-                    <!--                                <span>原李白</span></td>-->
-                    <!--                        </tr>-->
-
-                    <!--                        </tbody>-->
-                    <!--                    </table>-->
-                    <!--                    <table class="layui-table detail-table">-->
-                    <!--                        <thead>-->
-                    <!--                        <th colspan="2"><strong>社区审核</strong></th>-->
-                    <!--                        </thead>-->
-                    <!--                        <tbody>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>审核状态：</label>-->
-                    <!--                                <span class="color-red-ff0">未通过</span></td>-->
-                    <!--                            <td><label>审核原因：</label>-->
-                    <!--                                <span>原因描述</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>审核时间：</label>-->
-                    <!--                                <span> 2020-08-01 </span></td>-->
-                    <!--                            <td><label>审核人：</label>-->
-                    <!--                                <span>原李白</span></td>-->
-                    <!--                        </tr>-->
-
-                    <!--                        </tbody>-->
-                    <!--                    </table>-->
-                    <!--                    <table class="layui-table detail-table">-->
-                    <!--                        <thead>-->
-                    <!--                        <th colspan="2"><strong>核酸审核</strong></th>-->
-                    <!--                        </thead>-->
-                    <!--                        <tbody>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>审核状态：</label>-->
-                    <!--                                <span class="color-orange-ff6"> 待审核 </span></td>-->
-                    <!--                            <td><label>审核原因：</label>-->
-                    <!--                                <span>原因描述</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>审核时间：</label>-->
-                    <!--                                <span> 2020-08-01 </span></td>-->
-                    <!--                            <td><label>审核人：</label>-->
-                    <!--                                <span>原李白</span></td>-->
-                    <!--                        </tr>-->
-
-                    <!--                        </tbody>-->
-                    <!--                    </table>-->
-                    <!--                    <table class="layui-table detail-table">-->
-                    <!--                        <tbody>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>姓名：</label>-->
-                    <!--                                <span> 张三 </span></td>-->
-                    <!--                            <td><label>年龄：</label>-->
-                    <!--                                <span>22</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td><label>证件类型：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                            <td><label>证件号码：</label>-->
-                    <!--                                <span>H2398423942</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸检测日期：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸检测结果：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸：</label>-->
-                    <!--                                <span>身份证</span></td>-->
-                    <!--                        </tr>-->
-                    <!--                        <tr>-->
-                    <!--                            <td colspan="2"><label>核酸报告：</label>-->
-                    <!--                                <a href="" class="color-blue-006">查看</a></td>-->
-                    <!--                        </tr>-->
-                    <!--                        </tbody>-->
-                    <!--                    </table>-->
                 </el-tab-pane>
             </el-tabs>
         </template>
@@ -417,8 +293,6 @@
         data() {
             return {
                 idOrName: null,
-                currentPage: 1,
-                pageSize: 10,
                 tableData: [],
                 provinces: [],
                 cities: [],
@@ -441,18 +315,28 @@
                     sqCheckDate: '',
                     checkDate: ''
                 },
+
+
+                pageSize: 10,    //    每页的数据
+                currentPage: 1,//第几页
+                totalCount: 1,//总条数 这些数据虽然后面会赋值为后端返回的数，但是最好不要为空
             }
         },
         methods: {
-            // 初始页currentPage、初始每页数据数pagesize和数据data
-            handleSizeChange: function (size) {
-                this.pageSize = size;
+            //每页显示的条数
+            handleSizeChange(val) {
+                this.pageSize = val
+                this.appUserList(val, 1)
+                this.currentPage = 1
             },
-            handleCurrentChange: function (currentPage) {
-                this.currentPage = currentPage;
+            //显示第几页
+            handleCurrentChange(val) {
+                this.currentPage = val
+                this.appUserList(this.pageSize, val)
             },
-            appUserList() {
-                this.$http.post('http://127.0.0.1:8888/userInfo/user/list', {
+
+            appUserList(pageSize, pageNum) {
+                let data = {
                     province: this.province,
                     city: this.city,
                     area: this.area,
@@ -461,8 +345,17 @@
                     fillStatus: this.fillStatus,
                     userType: this.userType,
                     idOrName: this.idOrName
-                }, {emulateJSON: true}).then(function (res) {
-                    this.tableData = res.body.data;
+                }
+                if (pageNum != null && pageSize != null) {
+                    data.pageNum = pageNum;
+                    data.pageSize = pageSize;
+                } else {
+                    data.pageNum = this.currentPage;
+                    data.pageSize = this.pageSize;
+                }
+                this.$http.post('http://127.0.0.1:8888/userInfo/user/list', data, {emulateJSON: true}).then(function (res) {
+                    this.tableData = res.body.data.list;
+                    this.totalCount = res.body.data.total
                     for (var i = 0; i < this.tableData.length; i++) {
                         var certType = this.tableData[i].certType;
                         var checkStatus = this.tableData[i].checkStatus;
@@ -658,7 +551,10 @@
         },
         mounted() {
             this.getProvinces();
-        }
+        },
+        created() {
+            this.appUserList(this.pageSize, this.currentPage)
+        },
     }
 
 
