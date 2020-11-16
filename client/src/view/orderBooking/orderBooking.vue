@@ -206,16 +206,15 @@
                         <tr>
                             <td>
                                 <span>房间类型: </span>
-                                <el-select v-model="houseTypeUpt" @change="houseTypeSelect(houseTypeUpt)">
-                                    <el-option label="普通房间" value="1"></el-option>
-                                    <el-option label="货车司机专用" value="2"></el-option>
-                                    <el-option label="其他" value="3"></el-option>
+                                <el-select v-model="houseTypeUpt">
+                                    <el-option label="普通房间" value=1></el-option>
+                                    <el-option label="货车司机专用" value=2></el-option>
+                                    <el-option label="其他" value=3></el-option>
                                 </el-select>
                             </td>
                             <td>
-                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间">
-
-                                </el-date-picker>
+                                <span>入住时间：</span>
+                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间"/>
                             </td>
                             <td>
                                 <span>价格: </span>
@@ -616,8 +615,9 @@
                 this.orderId = row.id;
                 this.statusUpt = row.status.toString();
                 this.hotelIdUpt = row.hotelId;
-                this.houseTypeUpt = row.houseType;
-                this.houseTypeSelect(this.houseTypeUpt);
+                if (row.houseType != null) {
+                    this.houseTypeUpt = row.houseType.toString();
+                }
                 this.housePriceUpt = row.price;
                 this.checkinDateUpt = row.checkinDate;
                 this.realCheckInDateUpt = row.realCheckinDate;
@@ -654,9 +654,6 @@
                 })
                 this.orderInfoList();
                 this.dialogVisibleUp = false;
-            },
-            houseTypeSelect(houseTypeUpt) {
-                this.houseTypeUpt = houseTypeUpt;
             },
             orderDetail(row) {
                 this.dialogVisible = true;

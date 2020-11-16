@@ -554,6 +554,8 @@
                     )
             },
             getCities(id) {
+                this.city = null;
+                this.area = null;
                 this.$http.post('http://127.0.0.1:8888/userInfo/area/list', {id: id}, {emulateJSON: true})
                     .then(
                         function (res) {
@@ -562,6 +564,7 @@
                     )
             },
             getareas(id) {
+                this.area = null;
                 this.$http.post('http://127.0.0.1:8888/userInfo/area/list', {id: id}, {emulateJSON: true})
                     .then(
                         function (res) {

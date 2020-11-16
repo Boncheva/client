@@ -359,6 +359,35 @@
                 </td>
             </tr>
             <tr>
+                <td>
+                    <span>是否删除：</span>
+                    <el-select v-model="deletedUpdate">
+                        <el-option value='true' label="未删除"></el-option>
+                        <el-option value="false" label="已删除"></el-option>
+                    </el-select>
+                </td>
+                <td>
+                    是否展示：
+                    <el-select v-model="notshowUpdate">
+                        <el-option label="展示" value="true"></el-option>
+                        <el-option label="不展示" value="false"></el-option>
+                    </el-select>
+                </td>
+                <td>
+                    区政府是否上报：
+                    <el-select v-model="isReportUpdate">
+                        <el-option label="否" value="0"></el-option>
+                        <el-option label="是" value="1"></el-option>
+                    </el-select>
+                </td>
+                <td>
+                    房源：
+                    <el-select v-model="areaTypeUpdate">
+                        <el-option label="深圳房源" value="1"></el-option>
+                        <el-option label="珠海房源" value="2"></el-option>
+                        <el-option label="其他城市" value="3"></el-option>
+                    </el-select>
+                </td>
             </tr>
             <tr>
                 <td>
@@ -549,8 +578,8 @@
                 })
             },
             getStreetListUpdate(district) {
+                this.streetUpdate = null;
                 this.$http.get('http://127.0.0.1:8888/hotel/street/list', {params: {district: district}}).then(function (res) {
-                    this.streetUpdate = null;
                     this.streetUpdateList = res.body.data;
                 })
             },
@@ -594,7 +623,8 @@
             },
             openUpdate(row) {
                 this.updateId = row.id;
-                this.dialogVisibleUpdate = true;
+                this.streetUpdate = null,
+                    this.dialogVisibleUpdate = true;
                 this.hotelTypesListUpate = row.configList;
                 if (this.hotelTypesListUpate != null && this.hotelTypesListUpate.length > 0) {
                     let str = [];
@@ -603,9 +633,11 @@
                     });
                     this.hotelTypeUpdate = str;
                 }
-
+                if (row.district != null) {
+                    this.streetUpdateList = this.getStreetListUpdate(row.district);
+                    this.streetUpdate = row.street
+                }
                 this.districtUpdate = row.district,
-                    this.streetUpdate = row.street,
                     this.areaTypeUpdate = row.areaType,
                     this.hotelNameUpdate = row.hotelName,
                     this.hotelOtherNameUpdate = row.hotelOtherName,
@@ -616,7 +648,11 @@
                     this.hotelUsernameUpdate = row.hotelUsername,
                     this.hotelPasswordUpdate = row.hotelPassword,
                     this.controlDateUpdate = row.controlDate,
-                    this.reserveDateUpdate = row.reserveDate
+                    this.reserveDateUpdate = row.reserveDate,
+                    this.deletedUpdate = row.deleted.toString(),
+                    this.notshowUpdate = row.notshow.toString(),
+                    this.isReportUpdate = row.isReport.toString(),
+                    this.areaTypeUpdate = row.areaType.toString()
             },
             openAllocationOfHousing(row) {
                 this.dialogVisibleAOH = true;
@@ -757,16 +793,20 @@
                 data.hotelUsername = this.hotelUsernameUpdate;
                 data.hotelPassword = this.hotelPasswordUpdate;
                 data.remark = this.remarkUpdate;
-                this.$http.post('http://127.0.0.1:8888/hotel/info/update', data, {emulateJSON: true}).then(function (res) {
-                    if (res.status == 200) {
-                        this.$message.success("修改成功")
-                    } else {
-                        this.$message.error("修改失败")
-                    }
-                    this.dialogVisibleUpdate = false;
-                    this.hotelInfoList();
-                    this.clearUpdate();
-                })
+                data.deleted = this.deletedUpdate,
+                    data.notshow = this.notshowUpdate,
+                    data.isReport = this.isReportUpdate,
+                    data.areaType = this.areaTypeUpdate,
+                    this.$http.post('http://127.0.0.1:8888/hotel/info/update', data, {emulateJSON: true}).then(function (res) {
+                        if (res.status == 200) {
+                            this.$message.success("修改成功")
+                        } else {
+                            this.$message.error("修改失败")
+                        }
+                        this.dialogVisibleUpdate = false;
+                        this.hotelInfoList();
+                        this.clearUpdate();
+                    })
             },
             cancelUpdate() {
                 this.dialogVisibleUpdate = false;
