@@ -1,6 +1,8 @@
 package com.yitu.hotel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.mapper.DgtxPlacesMapper;
 import com.yitu.hotel.mapper.UserMapper;
 import com.yitu.hotel.model.JsonResult;
@@ -23,7 +25,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     private DgtxPlacesMapper dgtxPlacesMapper;
 
     @Override
-    public List<User> getUserInfoList(User user) {
+    public PageInfo<User> getUserInfoList(User user) {
+        PageHelper.startPage(user.getPageNum(), user.getPageSize());
         QueryWrapper qw = new QueryWrapper();
         if (StringUtils.isNotBlank(user.getProvince())) {
             qw.eq("province", user.getProvince());
@@ -54,7 +57,9 @@ public class UserInfoServiceImpl implements UserInfoService {
             qw.apply("( user_name like '%" + user.getIdOrName() + "%' or cert_no = '" + user.getIdOrName() + "')");
         }
         qw.select("id,cert_type,cert_no,user_name,check_status,sq_check_status,hs_rg_check_status,user_type,from_type,report_path,deleted");
-        return userMapper.selectList(qw);
+        List<User> list = userMapper.selectList(qw);
+        PageInfo<User> pageInfo = new PageInfo(list);
+        return pageInfo;
     }
 
     @Override

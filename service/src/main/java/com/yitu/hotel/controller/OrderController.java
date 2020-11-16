@@ -1,5 +1,6 @@
 package com.yitu.hotel.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.model.JsonResult;
 import com.yitu.hotel.model.entity.OrderInfo;
 import com.yitu.hotel.service.OrderService;
@@ -25,33 +26,29 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    //    @RequestMapping("list")
     @ApiOperation(value = "获取酒店订单列表")
     @RequestMapping(value = "list", method = RequestMethod.POST)
-    public JsonResult<List<OrderInfo>> orderInfoList(OrderInfo orderInfo) {
-        List<OrderInfo> orderInfoList = orderService.orderInfoList(orderInfo);
-        return JsonResult.ok(orderInfoList);
+    public JsonResult<PageInfo<OrderInfo>> orderInfoList(OrderInfo orderInfo) {
+        PageInfo<OrderInfo> pageInfo = orderService.orderInfoList(orderInfo);
+        return JsonResult.ok(pageInfo);
     }
 
-    //    @DeleteMapping("delete")
     @ApiOperation(value = "删除酒店")
     @RequestMapping(value = "delete", method = RequestMethod.DELETE)
     public JsonResult deleteOrder(String id) {
         return orderService.deleteOrder(id);
     }
 
-    //    @PostMapping("deleteList")
     @ApiOperation(value = "批量删除酒店")
     @RequestMapping(value = "deleteList", method = RequestMethod.POST)
     public JsonResult deleteOrderList(OrderInfo orderInfo) {
         return orderService.deleteOrderList(orderInfo);
     }
 
-    //    @GetMapping("export")
     @ApiOperation(value = "导出订单信息")
     @RequestMapping(value = "export", method = RequestMethod.GET)
     public void exportOrderListInfo(HttpServletRequest request, HttpServletResponse response, OrderInfo orderInfo) throws UnsupportedEncodingException {
-        List<OrderInfo> orderInfoList = orderService.orderInfoList(orderInfo);
+        List<OrderInfo> orderInfoList = orderService.orderInfoListExcel(orderInfo);
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/x-download");
@@ -145,21 +142,18 @@ public class OrderController {
         return JsonResult.ok();
     }
 
-    //    @GetMapping("detail")
     @ApiOperation(value = "删除订单信息")
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public JsonResult getOrderDetails(String id) {
         return orderService.getOrderDetails(id);
     }
 
-    //    @PostMapping("update")
     @ApiOperation(value = "更新订单信息")
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public JsonResult updateOrder(OrderInfo orderInfo) {
         return orderService.updateOrder(orderInfo);
     }
 
-    //    @PostMapping("mass/transfer")
     @ApiOperation(value = "批量转移订单信息")
     @RequestMapping(value = "mass/transfer", method = RequestMethod.POST)
     public JsonResult massTransfer(OrderInfo orderInfo) {

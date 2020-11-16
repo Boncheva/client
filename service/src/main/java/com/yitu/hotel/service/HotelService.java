@@ -1,5 +1,6 @@
 package com.yitu.hotel.service;
 
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.model.JsonResult;
 import com.yitu.hotel.model.entity.Hotel;
 
@@ -10,7 +11,7 @@ public interface HotelService {
 
     List<String> streetList(String district);
 
-    List<Hotel> hotelInfoList(Hotel hotel);
+    PageInfo<Hotel> hotelInfoList(Hotel hotel);
 
     JsonResult insertHotel(Hotel hotel) throws Exception;
 

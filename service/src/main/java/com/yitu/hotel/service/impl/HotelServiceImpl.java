@@ -1,19 +1,15 @@
 package com.yitu.hotel.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.mapper.ConfigMapper;
 import com.yitu.hotel.mapper.HotelMapper;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.Config;
 import com.yitu.hotel.model.entity.Hotel;
 import com.yitu.hotel.service.HotelService;
-import org.apache.commons.lang3.StringUtils;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,6 +23,7 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public List<String> districtList() {
+
         List<String> districtList = hotelMapper.selectListGroupBydistrict();
         return districtList;
     }
@@ -38,9 +35,11 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<Hotel> hotelInfoList(Hotel hotel) {
+    public PageInfo<Hotel> hotelInfoList(Hotel hotel) {
+        PageHelper.startPage(hotel.getPageNum(), hotel.getPageSize());
         List<Hotel> list = hotelMapper.hotelInfoList(hotel);
-        return list;
+        PageInfo<Hotel> pageInfo = new PageInfo<Hotel>(list);
+        return pageInfo;
     }
 
     @Override

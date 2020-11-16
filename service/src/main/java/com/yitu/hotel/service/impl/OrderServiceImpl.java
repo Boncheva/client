@@ -1,6 +1,8 @@
 package com.yitu.hotel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.mapper.HotelMapper;
 import com.yitu.hotel.mapper.OrderInfoMapper;
 import com.yitu.hotel.mapper.UserMapper;
@@ -39,8 +41,11 @@ public class OrderServiceImpl implements OrderService {
     private HotelMapper hotelMapper;
 
     @Override
-    public List<OrderInfo> orderInfoList(OrderInfo orderInfo) {
-        return orderInfoMapper.orderInfoList(orderInfo);
+    public PageInfo<OrderInfo> orderInfoList(OrderInfo orderInfo) {
+        PageHelper.startPage(orderInfo.getPageNum(), orderInfo.getPageSize());
+        List<OrderInfo> list = orderInfoMapper.orderInfoList(orderInfo);
+        PageInfo<OrderInfo> pageInfo = new PageInfo<OrderInfo>(list);
+        return pageInfo;
     }
 
     @Override
@@ -206,5 +211,10 @@ public class OrderServiceImpl implements OrderService {
             return JsonResult.fail(null);
         }
         return JsonResult.ok();
+    }
+
+    @Override
+    public List<OrderInfo> orderInfoListExcel(OrderInfo orderInfo) {
+        return orderInfoMapper.orderInfoList(orderInfo);
     }
 }

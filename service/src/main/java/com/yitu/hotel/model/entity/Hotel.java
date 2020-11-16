@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.List;
  * @since 2020-10-29
  */
 @TableName("hotel")
-public class Hotel implements Serializable {
+public class Hotel extends Page implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -1,5 +1,6 @@
 package com.yitu.hotel.service;
 
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.model.JsonResult;
 import com.yitu.hotel.model.entity.OrderInfo;
 import org.springframework.web.multipart.MultipartFile;
@@ -7,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface OrderService {
-    List<OrderInfo> orderInfoList(OrderInfo orderInfo);
+    PageInfo<OrderInfo> orderInfoList(OrderInfo orderInfo);
 
     JsonResult deleteOrder(String id);
 
@@ -20,4 +21,6 @@ public interface OrderService {
     JsonResult updateOrder(OrderInfo orderInfo);
 
     JsonResult massTransfer(OrderInfo orderInfo);
+
+    List<OrderInfo> orderInfoListExcel(OrderInfo orderInfo);
 }

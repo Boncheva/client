@@ -159,6 +159,6 @@
         <if test="hotelName!=null and hotelName!=''">
             and hotel_name like '%${hotelName}%'
         </if>
-        ) x;
+        ) x
     </select>
 </mapper>

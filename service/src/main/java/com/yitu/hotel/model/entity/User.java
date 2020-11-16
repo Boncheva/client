@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @since 2020-10-29
  */
 @TableName("user")
-public class User implements Serializable {
+public class User extends Page implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

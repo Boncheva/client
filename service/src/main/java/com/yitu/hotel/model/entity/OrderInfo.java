@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2020-10-29
  */
 @TableName("order_info")
-public class OrderInfo implements Serializable {
+public class OrderInfo extends Page implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

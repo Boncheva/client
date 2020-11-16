@@ -1,5 +1,6 @@
 package com.yitu.hotel.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.model.JsonResult;
 import com.yitu.hotel.model.entity.Hotel;
 import com.yitu.hotel.service.HotelService;
@@ -33,8 +34,8 @@ public class HotelController {
 
     @ApiOperation(value = "获取酒店列表")
     @RequestMapping(value = "info/list", method = RequestMethod.POST)
-    public JsonResult<List<Hotel>> hotelInfoList(Hotel hotel) {
-        List<Hotel> hotelInfoList = hotelService.hotelInfoList(hotel);
+    public JsonResult<PageInfo<Hotel>> hotelInfoList(Hotel hotel) {
+        PageInfo<Hotel> hotelInfoList = hotelService.hotelInfoList(hotel);
         return JsonResult.ok(hotelInfoList);
     }
 
