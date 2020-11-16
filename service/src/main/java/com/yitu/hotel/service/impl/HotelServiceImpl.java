@@ -40,18 +40,6 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public List<Hotel> hotelInfoList(Hotel hotel) {
         List<Hotel> list = hotelMapper.hotelInfoList(hotel);
-        for (Hotel h : list) {
-            List<Config> configList = new ArrayList<>();
-            String hotelTypes = h.getHotelTypes();
-            if (StringUtils.isNotBlank(hotelTypes)) {
-                String[] split = hotelTypes.split(",");
-                for (int i = 0; i < split.length; i++) {
-                    Config config = configMapper.selectById(split[i]);
-                    configList.add(config);
-                }
-                h.setConfigList(configList);
-            }
-        }
         return list;
     }
 
