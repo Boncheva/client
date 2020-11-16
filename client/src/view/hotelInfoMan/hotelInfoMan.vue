@@ -518,6 +518,7 @@
                 hotelPasswordAdd: null,
                 controlDateAdd: null,
                 reserveDateAdd: null,
+                hotelTypesIdList: null,
 
                 updateId: null,
                 hotelTypeUpdate: null,
@@ -542,6 +543,7 @@
                 controlDateUpdate: null,
                 reserveDateUpdate: null,
                 hotelTypesListUpate: [],
+                hotelTypeUpdateIdList: null,
 
                 allocationId: null,
             }
@@ -600,37 +602,59 @@
                     hotelTypes: this.hotelTypes,
                     hotelName: this.hotelName
                 }, {emulateJSON: true}).then(function (res) {
-                    res.body.data.map((item => {
-                        if (item.configList != null && item.configList.length > 0) {
-                            let str = "";
-                            let arr = item.configList;
-                            let length = item.configList.length;
-                            for (let i = 0; i < length; i++) {
-                                if (i == length - 1) {
-                                    str = str + arr[i].itemName;
-                                } else {
-                                    str = str + arr[i].itemName + "，";
+                    this.tableData = res.body.data;
+                    this.getHotelTypesList();
+                    let list = this.hotelTypesList;
+                    this.tableData.map((item => {
+                        if (item.hotelTypes != null && item.hotelTypes != '') {
+                            let hotelTypesList = item.hotelTypes.split(',');
+                            let str = '';
+                            for (let i = 0; i < hotelTypesList.length; i++) {
+                                for (let j = 0; j < list.length; j++) {
+                                    if (hotelTypesList[i] == list[j].id) {
+                                        if (i == hotelTypesList.length - 1) {
+                                            str = str + list[j].itemValue;
+                                        } else {
+                                            str = str + list[j].itemValue + ',';
+                                        }
+                                    }
                                 }
                             }
                             item.hotelTypes = str;
+                            item.hotelList = hotelTypesList;
                         }
                     }))
-                    this.tableData = res.body.data;
                 })
             },
             openAdd() {
+                this.hotelTypeAdd = null;
+                this.hotelTypesIdList = null;
+                this.hotelTypeAddList = null;
                 this.dialogVisibleAdd = true;
             },
             openUpdate(row) {
+                this.hotelTypeUpdateIdList = '';
+                this.hotelTypesListUpate = null;
                 this.updateId = row.id;
                 this.streetUpdate = null,
                     this.dialogVisibleUpdate = true;
-                this.hotelTypesListUpate = row.configList;
+                this.hotelTypesListUpate = row.hotelList;
                 if (this.hotelTypesListUpate != null && this.hotelTypesListUpate.length > 0) {
-                    let str = [];
-                    this.hotelTypesListUpate.map(function (item) {
-                        str.push(item.itemName);
-                    });
+                    let str = '';
+                    let list = this.hotelTypesList;
+                    for (let i = 0; i < this.hotelTypesListUpate.length; i++) {
+                        for (let j = 0; j < list.length; j++) {
+                            if (this.hotelTypesListUpate[i] == list[j].id) {
+                                if (i == this.hotelTypesListUpate.length - 1) {
+                                    str = str + list[j].itemValue;
+                                    this.hotelTypeUpdateIdList = this.hotelTypeUpdateIdList + list[j].id.toString();
+                                } else {
+                                    str = str + list[j].itemValue + ',';
+                                    this.hotelTypeUpdateIdList = this.hotelTypeUpdateIdList + list[j].id.toString() + ',';
+                                }
+                            }
+                        }
+                    }
                     this.hotelTypeUpdate = str;
                 }
                 if (row.district != null) {
@@ -696,23 +720,12 @@
                     this.$message.error("请选择酒店类型")
                     return;
                 }
-                let hotelTypes = "";
-                if (this.hotelTypeAddList.length > 0) {
-                    let length = this.hotelTypeAddList.length;
-                    for (let i = 0; i < length; i++) {
-                        if (i == length - 1) {
-                            hotelTypes = hotelTypes + this.hotelTypeAddList[i].id;
-                        } else {
-                            hotelTypes = hotelTypes + this.hotelTypeAddList[i].id + ",";
-                        }
-                    }
-                }
                 if (this.hotelNameAdd == null) {
                     this.$message.error("请输入酒店名称")
                     return;
                 }
-                this.$http.post('http://127.0.0.1:8888/hotel/info/add', {
-                    hotelTypes: hotelTypes,
+                let data = {
+                    hotelTypes: this.hotelTypesIdList,
                     district: this.districtAdd,
                     street: this.streetAdd,
                     deleted: this.deletedAdd,
@@ -727,9 +740,14 @@
                     remark: this.remarkAdd,
                     hotelUsername: this.hotelUsernameAdd,
                     hotelPassword: this.hotelPasswordAdd,
-                    controlDate: (this.controlDateAdd == null) || (this.controlDateAdd == '') ? null : this.$moment(this.controlDateAdd).format('YYYY-MM-DD'),
-                    reserveDate: (this.reserveDateAdd == null) || (this.reserveDateAdd == '') ? null : this.$moment(this.reserveDateAdd).format('YYYY-MM-DD'),
-                }, {emulateJSON: true}).then(function (res) {
+                }
+                if (this.controlDateAdd != null && this.controlDateAdd != '') {
+                    data.controlDate = this.$moment(this.controlDateAdd).format('YYYY-MM-DD')
+                }
+                if (this.reserveDateAdd != null && this.reserveDateAdd != '') {
+                    data.reserveDate = this.$moment(this.reserveDateAdd).format('YYYY-MM-DD')
+                }
+                this.$http.post('http://127.0.0.1:8888/hotel/info/add', data, {emulateJSON: true}).then(function (res) {
                     if (res.status == 200) {
                         this.$message.success("新增成功")
                     } else {
@@ -767,23 +785,12 @@
                 this.reserveDateAdd = null;
             },
             updateHotel() {
-                let hotelTypes = "";
-                if (this.hotelTypesListUpate.length > 0) {
-                    let length = this.hotelTypesListUpate.length;
-                    for (let i = 0; i < length; i++) {
-                        if (i == length - 1) {
-                            hotelTypes = hotelTypes + this.hotelTypesListUpate[i].id;
-                        } else {
-                            hotelTypes = hotelTypes + this.hotelTypesListUpate[i].id + ",";
-                        }
-                    }
-                }
                 let data = {
                     id: this.updateId
                 };
                 data.hotelName = this.hotelNameUpdate;
                 data.hotelOtherName = this.hotelOtherNameUpdate;
-                data.hotelTypes = hotelTypes;
+                data.hotelTypes = this.hotelTypeUpdateIdList;
                 data.district = this.districtUpdate;
                 data.street = this.streetUpdate;
                 data.areaType = this.areaTypeUpdate;
@@ -846,49 +853,69 @@
                 })
             },
             hotelTypesChoice(hotelTypeAdd) {
-                let list = [];
+                let str = '';
+                this.hotelTypesIdList = '';
                 if (this.hotelTypeAddList == null) {
                     this.hotelTypeAddList = [];
                 }
                 if (this.hotelTypeAddList.length > 0) {
-                    if (this.hotelTypeAddList.includes(hotelTypeAdd)) {
-                        let index = this.hotelTypeAddList.indexOf(hotelTypeAdd);
+                    if (this.hotelTypeAddList.includes(hotelTypeAdd.id.toString())) {
+                        let index = this.hotelTypeAddList.indexOf(hotelTypeAdd.id.toString());
                         this.hotelTypeAddList.splice(index, 1)
                     } else {
-                        this.hotelTypeAddList.push(hotelTypeAdd);
+                        this.hotelTypeAddList.push(hotelTypeAdd.id.toString());
                     }
                 } else {
-                    this.hotelTypeAddList.push(hotelTypeAdd);
+                    this.hotelTypeAddList.push(hotelTypeAdd.id.toString());
                 }
-                for (let i = 0; i < this.hotelTypeAddList.length; i++) {
-                    list.push(this.hotelTypeAddList[i].itemName);
+                if (this.hotelTypeAddList.length > 0) {
+                    let length = this.hotelTypeAddList.length;
+                    for (let i = 0; i < length; i++) {
+                        for (let j = 0; j < this.hotelTypesList.length; j++) {
+                            if (this.hotelTypeAddList[i] == this.hotelTypesList[j].id) {
+                                if (i == length - 1) {
+                                    str = str + this.hotelTypesList[j].itemValue;
+                                    this.hotelTypesIdList = this.hotelTypesIdList + this.hotelTypesList[j].id;
+                                } else {
+                                    str = str + this.hotelTypesList[j].itemValue + ",";
+                                    this.hotelTypesIdList = this.hotelTypesIdList + this.hotelTypesList[j].id + ",";
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
-                this.hotelTypeAdd = list;
+                this.hotelTypeAdd = str;
             },
             updateHotelTypes(hotelTypeUpdate) {
-                let list = [];
-                let list2 = [];
                 if (this.hotelTypesListUpate != null && this.hotelTypesListUpate.length > 0) {
-                    this.hotelTypesListUpate.map(function (item) {
-                        list2.push(item.id);
-                    })
-                } else {
-                    this.hotelTypesListUpate = [];
-                }
-                if (list2.length > 0) {
-                    if (list2.includes(hotelTypeUpdate.id)) {
-                        let index = list2.indexOf(hotelTypeUpdate.id);
+                    if (this.hotelTypesListUpate.includes(hotelTypeUpdate.id.toString())) {
+                        let index = this.hotelTypesListUpate.indexOf(hotelTypeUpdate.id.toString());
                         this.hotelTypesListUpate.splice(index, 1)
                     } else {
-                        this.hotelTypesListUpate.push(hotelTypeUpdate);
+                        this.hotelTypesListUpate.push(hotelTypeUpdate.id.toString());
                     }
                 } else {
-                    this.hotelTypesListUpate.push(hotelTypeUpdate);
+                    this.hotelTypesListUpate = [];
+                    this.hotelTypesListUpate.push(hotelTypeUpdate.id.toString())
                 }
-                this.hotelTypesListUpate.map(function (hotelType) {
-                    list.push(hotelType.itemName);
-                })
-                this.hotelTypeUpdate = list;
+                let str = '';
+                this.hotelTypeUpdateIdList = '';
+                for (let i = 0; i < this.hotelTypesListUpate.length; i++) {
+                    for (let j = 0; j < this.hotelTypesList.length; j++) {
+                        if (this.hotelTypesListUpate[i] == this.hotelTypesList[j].id) {
+                            if (i == this.hotelTypesListUpate.length - 1) {
+                                str = str + this.hotelTypesList[j].itemValue;
+                                this.hotelTypeUpdateIdList = this.hotelTypeUpdateIdList.toString() + this.hotelTypesList[j].id.toString();
+                            } else {
+                                str = str + this.hotelTypesList[j].itemValue + ',';
+                                this.hotelTypeUpdateIdList = this.hotelTypeUpdateIdList.toString() + this.hotelTypesList[j].id.toString() + ',';
+                            }
+                            break;
+                        }
+                    }
+                }
+                this.hotelTypeUpdate = str;
             }
         },
         mounted() {
