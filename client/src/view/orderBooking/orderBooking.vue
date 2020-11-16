@@ -648,11 +648,11 @@
                     }).then((res) => {
                     if (res.status == 200) {
                         this.$message.success("修改成功")
+                        this.orderInfoList();
                     } else {
                         this.$message.error("修改失败")
                     }
                 })
-                this.orderInfoList();
                 this.dialogVisibleUp = false;
             },
             orderDetail(row) {
