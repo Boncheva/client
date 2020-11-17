@@ -41,6 +41,9 @@ public class SysLogAspect {
     @Autowired
     private AdminUserMapper adminUserMapper;
 
+    /**
+     * 监听每个controller方法
+     */
     @Pointcut("execution(public * com.yitu.hotel.controller.*Controller.*(..))")
     public void logPointCut() {
     }

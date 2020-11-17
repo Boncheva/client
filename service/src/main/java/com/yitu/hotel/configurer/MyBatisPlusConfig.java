@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @description:
+ * @description:分页插件配置
  * @author: zouhao
  * @Date: 2020/11/16
  * @time: 17:18

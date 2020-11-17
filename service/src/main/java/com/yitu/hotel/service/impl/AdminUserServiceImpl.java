@@ -27,6 +27,13 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Autowired
     private TokenMapper tokenMapper;
 
+    /**
+     * 用户登录
+     *
+     * @param adminUser
+     * @param request
+     * @return
+     */
     @Override
     public JsonResult login(AdminUser adminUser, HttpServletRequest request) {
         QueryWrapper qw = new QueryWrapper();
@@ -36,6 +43,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (result == null) {
             return JsonResult.fail("用户名或密码错误");
         } else {
+            //验证通过，绑定token
             Map<String, Object> map = new HashMap();
             String Token = operateToKen(result, result.getId());
             map.put("userToken", Token);
@@ -52,6 +60,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据情况生成后者更新用户token
+     *
+     * @param user
+     * @param userId
+     * @return
+     */
     private String operateToKen(AdminUser user, long userId) {
         //根据数据库的用户信息查询Token
         QueryWrapper qw = new QueryWrapper();

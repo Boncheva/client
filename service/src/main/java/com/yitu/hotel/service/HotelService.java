@@ -20,4 +20,6 @@ public interface HotelService {
     JsonResult deleteHotel(String id) throws Exception;
 
     JsonResult allocationOfHousing(Hotel hotel) throws Exception;
+
+    JsonResult verifyThatTheHotelNameOrAliasExists(Hotel hotel);
 }

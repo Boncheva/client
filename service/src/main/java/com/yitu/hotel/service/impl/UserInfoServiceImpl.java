@@ -24,6 +24,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private DgtxPlacesMapper dgtxPlacesMapper;
 
+    /**
+     * 获取用户列表
+     *
+     * @param user
+     * @return
+     */
     @Override
     public PageInfo<User> getUserInfoList(User user) {
         PageHelper.startPage(user.getPageNum(), user.getPageSize());
@@ -62,6 +68,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         return pageInfo;
     }
 
+    /**
+     * 根据条件获取区域列表(省市区)
+     *
+     * @param dgtxPlaces
+     * @return
+     */
     @Override
     public List<DgtxPlaces> getAreaList(DgtxPlaces dgtxPlaces) {
         List<DgtxPlaces> dgtxPlacesList;
@@ -77,6 +89,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         return dgtxPlacesMapper.selectList(qw);
     }
 
+    /**
+     * 根据用户id获取用户信息
+     *
+     * @param userId
+     * @return
+     */
     @Override
     public User getUserInfo(String userId) {
         QueryWrapper qw;
@@ -84,6 +102,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         return user;
     }
 
+    /**
+     * 根据用户id重置用户密码
+     *
+     * @param user
+     * @return
+     */
     @Override
     public JsonResult restPwd(User user) {
         try {
@@ -94,6 +118,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据用户id删除用户信息
+     *
+     * @param userId
+     * @return
+     */
     @Override
     public JsonResult deleteUser(String userId) {
         try {

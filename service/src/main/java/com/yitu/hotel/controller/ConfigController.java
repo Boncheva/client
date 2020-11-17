@@ -19,6 +19,11 @@ public class ConfigController {
     @Autowired
     private ConfigService configService;
 
+    /**
+     * 获取字典数据（酒店类型，来源等等）
+     * @param config
+     * @return
+     */
     @ApiOperation(value = "获取参数信息", notes = "根据id获取参数信息")
     @RequestMapping(value = "list", method = RequestMethod.GET)
     public JsonResult<List<Config>> configList(Config config) {

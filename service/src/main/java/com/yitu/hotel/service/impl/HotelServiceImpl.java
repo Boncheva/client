@@ -1,5 +1,6 @@
 package com.yitu.hotel.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.mapper.ConfigMapper;
@@ -7,6 +8,7 @@ import com.yitu.hotel.mapper.HotelMapper;
 import com.yitu.hotel.model.JsonResult;
 import com.yitu.hotel.model.entity.Hotel;
 import com.yitu.hotel.service.HotelService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,11 @@ public class HotelServiceImpl implements HotelService {
     @Autowired
     private ConfigMapper configMapper;
 
+    /**
+     * 获取区域列表
+     *
+     * @return
+     */
     @Override
     public List<String> districtList() {
 
@@ -28,12 +35,24 @@ public class HotelServiceImpl implements HotelService {
         return districtList;
     }
 
+    /**
+     * 根据区域获取该区域街道列表
+     *
+     * @param district
+     * @return
+     */
     @Override
     public List<String> streetList(String district) {
         List<String> streetList = hotelMapper.selectListGroupByStreet(district);
         return streetList;
     }
 
+    /**
+     * 根据查询条件获取酒店列表
+     *
+     * @param hotel
+     * @return
+     */
     @Override
     public PageInfo<Hotel> hotelInfoList(Hotel hotel) {
         PageHelper.startPage(hotel.getPageNum(), hotel.getPageSize());
@@ -42,8 +61,20 @@ public class HotelServiceImpl implements HotelService {
         return pageInfo;
     }
 
+    /**
+     * 新增酒店信息
+     *
+     * @param hotel
+     * @return
+     * @throws Exception
+     */
     @Override
     public JsonResult insertHotel(Hotel hotel) throws Exception {
+        //判断酒店名称和别名是否已经存在
+        JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotel);
+        if (jsonResult.getStatus() == 500) {
+            return JsonResult.fail(jsonResult.getMsg());
+        }
         try {
             hotel.setHouse1Count(0);
             hotel.setHouse1ShowCount(0);
@@ -70,8 +101,18 @@ public class HotelServiceImpl implements HotelService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据酒店信息id修改酒店信息
+     *
+     * @param hotel
+     * @return
+     */
     @Override
     public JsonResult updateHotel(Hotel hotel) throws Exception {
+        JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotel);
+        if (jsonResult.getStatus() == 500) {
+            return JsonResult.fail(jsonResult.getMsg());
+        }
         try {
             hotelMapper.updateById(hotel);
         } catch (Exception e) {
@@ -80,6 +121,12 @@ public class HotelServiceImpl implements HotelService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据酒店id删除酒店信息
+     *
+     * @param id
+     * @return
+     */
     @Override
     public JsonResult deleteHotel(String id) throws Exception {
         try {
@@ -90,6 +137,13 @@ public class HotelServiceImpl implements HotelService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据酒店id分配房源
+     *
+     * @param hotel
+     * @return
+     * @throws Exception
+     */
     @Override
     public JsonResult allocationOfHousing(Hotel hotel) throws Exception {
         Hotel hotel1 = hotelMapper.selectById(hotel.getId());
@@ -163,6 +217,41 @@ public class HotelServiceImpl implements HotelService {
             hotelMapper.updateById(hotel);
         } catch (Exception e) {
             throw new Exception();
+        }
+        return JsonResult.ok();
+    }
+
+    /**
+     * 验证酒店名称或者别名是否已经存在(新增或者修改酒店信息的时候调用)
+     *
+     * @param hotel
+     * @return
+     */
+    @Override
+    public JsonResult verifyThatTheHotelNameOrAliasExists(Hotel hotel) {
+        QueryWrapper qw = new QueryWrapper();
+        if (StringUtils.isNotBlank(hotel.getHotelName())) {
+            qw.eq("hotel_name", hotel.getHotelName());
+            if (StringUtils.isNotBlank(hotel.getId().toString())) {
+                //如果参数中包含酒店id，则为更新判断,否则为新增判断
+                qw.ne("id", hotel.getId());
+            }
+            List list = hotelMapper.selectList(qw);
+            if (list.size() > 0) {
+                return JsonResult.fail("酒店名称已存在");
+            }
+        }
+        qw.clear();
+        if (StringUtils.isNotBlank(hotel.getHotelOtherName())) {
+            qw.eq("hotel_other_name", hotel.getHotelOtherName());
+            if (StringUtils.isNotBlank(hotel.getId().toString())) {
+                //如果参数中包含酒店id，则为更新判断,否则为新增判断
+                qw.ne("id", hotel.getId());
+            }
+            List list = hotelMapper.selectList(qw);
+            if (list.size() > 0) {
+                return JsonResult.fail("酒店别名已存在");
+            }
         }
         return JsonResult.ok();
     }

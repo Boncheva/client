@@ -40,6 +40,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private HotelMapper hotelMapper;
 
+    /**
+     * 获取酒店订单列表
+     *
+     * @param orderInfo
+     * @return
+     */
     @Override
     public PageInfo<OrderInfo> orderInfoList(OrderInfo orderInfo) {
         PageHelper.startPage(orderInfo.getPageNum(), orderInfo.getPageSize());
@@ -48,6 +54,12 @@ public class OrderServiceImpl implements OrderService {
         return pageInfo;
     }
 
+    /**
+     * 根据订单id删除订单信息
+     *
+     * @param id
+     * @return
+     */
     @Override
     public JsonResult deleteOrder(String id) {
         try {
@@ -58,6 +70,12 @@ public class OrderServiceImpl implements OrderService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据订单id列表批量删除订单
+     *
+     * @param orderInfo
+     * @return
+     */
     @Override
     public JsonResult deleteOrderList(OrderInfo orderInfo) {
         QueryWrapper qw = new QueryWrapper();
@@ -70,6 +88,12 @@ public class OrderServiceImpl implements OrderService {
         return JsonResult.ok();
     }
 
+    /**
+     * 批量上传订单信息
+     *
+     * @param file
+     * @return
+     */
     @Override
     @Transactional
     public JsonResult uploadOrderListInfo(List<MultipartFile> file) throws RuntimeException {
@@ -105,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
                 Long userId = Long.valueOf(nf.format(row.getCell(2).getNumericCellValue()).replace(",", ""));
                 Integer userType = Integer.valueOf(nf.format(row.getCell(3).getNumericCellValue()).replace(",", ""));
                 String price = String.valueOf(row.getCell(4));
-                LocalDate checkinDate = null;
+                String checkinDate = null;
                 LocalDateTime addDate = null;
                 LocalDateTime realCheckinDate = null;
                 LocalDateTime cancelDate = null;
@@ -114,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
                 LocalDateTime checkoutDate = null;
                 LocalDateTime checkDate = null;
                 if (StringUtils.isNotBlank(row.getCell(5).toString())) {
-                    checkinDate = LocalDate.parse(String.valueOf(row.getCell(5)), df);
+                    checkinDate = String.valueOf(row.getCell(5));
                 }
                 if (StringUtils.isNotBlank(row.getCell(7).toString())) {
                     addDate = LocalDateTime.parse(String.valueOf(row.getCell(7)), dTf);
@@ -153,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
                 orderInfo.setUserId(userId);
                 orderInfo.setUserType(userType);
                 orderInfo.setPrice(price);
-//                orderInfo.setCheckinDate(checkinDate);
+                orderInfo.setCheckinDate(checkinDate);
                 orderInfo.setAddDate(addDate);
                 orderInfo.setRealCheckinDate(realCheckinDate);
                 orderInfo.setCancelDate(cancelDate);
@@ -183,7 +207,9 @@ public class OrderServiceImpl implements OrderService {
         OrderInfo orderInfo = orderInfoMapper.selectById(id);
         Long userId = orderInfo.getUserId();
         Long hotelId = orderInfo.getHotelId();
+        //根据用户id查询用户详情
         User user = userMapper.selectById(userId);
+        //根据酒店id查询酒店详情
         Hotel hotel = hotelMapper.selectById(hotelId);
         Map<String, Object> map = new HashMap<>();
         map.put("userInfo", user);
@@ -191,6 +217,12 @@ public class OrderServiceImpl implements OrderService {
         return JsonResult.ok(map);
     }
 
+    /**
+     * 根据订单id修改订单信息
+     *
+     * @param orderInfo
+     * @return
+     */
     @Override
     public JsonResult updateOrder(OrderInfo orderInfo) {
         try {
@@ -201,6 +233,12 @@ public class OrderServiceImpl implements OrderService {
         return JsonResult.ok();
     }
 
+    /**
+     * 根据订单id集合，批量转移订单
+     *
+     * @param orderInfo
+     * @return
+     */
     @Override
     public JsonResult massTransfer(OrderInfo orderInfo) {
         QueryWrapper qw = new QueryWrapper();
@@ -213,6 +251,14 @@ public class OrderServiceImpl implements OrderService {
         return JsonResult.ok();
     }
 
+    /**
+     * 导出订单信息，（条件和查询订单信息条件一致）
+     *
+     * @param request
+     * @param response
+     * @param orderInfo
+     * @throws UnsupportedEncodingException
+     */
     @Override
     public List<OrderInfo> orderInfoListExcel(OrderInfo orderInfo) {
         return orderInfoMapper.orderInfoList(orderInfo);

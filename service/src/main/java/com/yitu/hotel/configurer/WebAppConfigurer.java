@@ -12,10 +12,14 @@ public class WebAppConfigurer implements WebMvcConfigurer {
     @Autowired
     private MyInterceptor myInterceptor;
 
+    /**
+     * 拦截器拦截
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 可添加多个
-        registry.addInterceptor(myInterceptor).addPathPatterns("/**").excludePathPatterns("/admin/login","/order/export");
+        // 用户登录，文件上传，文件导出放开
+        registry.addInterceptor(myInterceptor).addPathPatterns("/**").excludePathPatterns("/admin/login","/order/export","/order/upload");
     }
 
 }

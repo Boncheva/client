@@ -26,6 +26,12 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    /**
+     * 获取酒店订单列表
+     *
+     * @param orderInfo
+     * @return
+     */
     @ApiOperation(value = "获取酒店订单列表")
     @RequestMapping(value = "list", method = RequestMethod.POST)
     public JsonResult<PageInfo<OrderInfo>> orderInfoList(OrderInfo orderInfo) {
@@ -33,18 +39,38 @@ public class OrderController {
         return JsonResult.ok(pageInfo);
     }
 
+    /**
+     * 根据订单id删除订单信息
+     *
+     * @param id
+     * @return
+     */
     @ApiOperation(value = "删除酒店")
     @RequestMapping(value = "delete", method = RequestMethod.DELETE)
     public JsonResult deleteOrder(String id) {
         return orderService.deleteOrder(id);
     }
 
+    /**
+     * 根据订单id集合批量删除订单
+     *
+     * @param orderInfo
+     * @return
+     */
     @ApiOperation(value = "批量删除酒店")
     @RequestMapping(value = "deleteList", method = RequestMethod.POST)
     public JsonResult deleteOrderList(OrderInfo orderInfo) {
         return orderService.deleteOrderList(orderInfo);
     }
 
+    /**
+     * 导出订单信息，（条件和查询订单信息条件一致）
+     *
+     * @param request
+     * @param response
+     * @param orderInfo
+     * @throws UnsupportedEncodingException
+     */
     @ApiOperation(value = "导出订单信息")
     @RequestMapping(value = "export", method = RequestMethod.GET)
     public void exportOrderListInfo(HttpServletRequest request, HttpServletResponse response, OrderInfo orderInfo) throws UnsupportedEncodingException {
@@ -130,7 +156,12 @@ public class OrderController {
 
     }
 
-    //    @PostMapping("upload")
+    /**
+     * 批量上传订单信息
+     *
+     * @param file
+     * @return
+     */
     @ApiOperation(value = "批量上传订单信息")
     @RequestMapping(value = "upload", method = RequestMethod.POST)
     public JsonResult uploadOrderListInfo(List<MultipartFile> file) {
@@ -142,18 +173,36 @@ public class OrderController {
         return JsonResult.ok();
     }
 
-    @ApiOperation(value = "删除订单信息")
+    /**
+     * 根据订单id获取订单详情
+     *
+     * @param id
+     * @return
+     */
+    @ApiOperation(value = "获取订单详情")
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public JsonResult getOrderDetails(String id) {
         return orderService.getOrderDetails(id);
     }
 
+    /**
+     * 根据订单id修改订单信息
+     *
+     * @param orderInfo
+     * @return
+     */
     @ApiOperation(value = "更新订单信息")
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public JsonResult updateOrder(OrderInfo orderInfo) {
         return orderService.updateOrder(orderInfo);
     }
 
+    /**
+     * 根据订单id集合，批量转移订单
+     *
+     * @param orderInfo
+     * @return
+     */
     @ApiOperation(value = "批量转移订单信息")
     @RequestMapping(value = "mass/transfer", method = RequestMethod.POST)
     public JsonResult massTransfer(OrderInfo orderInfo) {

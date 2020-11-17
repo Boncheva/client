@@ -1,5 +1,7 @@
 package com.yitu.hotel.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+
 /**
  * @description:
  * @author: zouhao
@@ -8,9 +10,11 @@ package com.yitu.hotel.model.entity;
  */
 public class Page {
 
-    public Integer pageNum = 1;
+    @TableField(exist = false)
+    public Integer pageNum = 0;
 
-    public Integer pageSize = 10;
+    @TableField(exist = false)
+    public Integer pageSize = 0;
 
     public int getPageNum() {
         return pageNum;

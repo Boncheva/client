@@ -15,6 +15,11 @@ public class ConfigServiceImpl implements ConfigService {
     @Autowired
     private ConfigMapper configMapper;
 
+    /**
+     * 获取字典数据（酒店类型，来源等等）
+     * @param config
+     * @return
+     */
     @Override
     public List<Config> configList(Config config) {
         QueryWrapper queryWrapper = new QueryWrapper();
