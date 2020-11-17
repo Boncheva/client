@@ -22,7 +22,7 @@ new Vue({
 
 Vue.prototype.$moment = moment;//赋值使用
 
-// 添加请求拦截器，在请求头中加token
+// 添加请求拦截器，在所有请求头中加token
 Vue.http.interceptors.push((request, next) => {
     if (!(request.url.indexOf('/admin/login') != -1)) {
         let TOKEN = localStorage.getItem('Authorization');

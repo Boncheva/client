@@ -248,7 +248,11 @@
                 </td>
                 <td>
                     酒店登陆密码：
-                    <el-input v-model="hotelPasswordAdd"></el-input>
+                    <el-input v-model="hotelPasswordAdd" show-password></el-input>
+                </td>
+                <td>
+                    确认酒店登陆密码：
+                    <el-input v-model="confirmHotelPasswordAdd" show-password></el-input>
                 </td>
                 <td>
                     管控时间：
@@ -274,13 +278,6 @@
                             type="date"
                             placeholder="选择日期">
                     </el-date-picker>
-                </td>
-                <td>
-                    区政府是否上报：
-                    <el-select v-model="isReportAdd">
-                        <el-option label="否" value="0"></el-option>
-                        <el-option label="是" value="1"></el-option>
-                    </el-select>
                 </td>
                 <td>
                     房源：
@@ -400,7 +397,11 @@
                 </td>
                 <td>
                     酒店登陆密码：
-                    <el-input v-model="hotelPasswordUpdate"></el-input>
+                    <el-input v-model="hotelPasswordUpdate" show-password></el-input>
+                </td>
+                <td>
+                    确认酒店登陆密码：
+                    <el-input v-model="confirmHotelPasswordUpdate" show-password></el-input>
                 </td>
             </tr>
         </table>
@@ -518,6 +519,7 @@
                 modifyDateAdd: null,
                 hotelUsernameAdd: null,
                 hotelPasswordAdd: null,
+                confirmHotelPasswordAdd: null,
                 controlDateAdd: null,
                 reserveDateAdd: null,
                 hotelTypesIdList: null,
@@ -542,6 +544,7 @@
                 modifyDateUpdate: null,
                 hotelUsernameUpdate: null,
                 hotelPasswordUpdate: null,
+                confirmHotelPasswordUpdate: null,
                 controlDateUpdate: null,
                 reserveDateUpdate: null,
                 hotelTypesListUpate: [],
@@ -549,9 +552,12 @@
 
                 allocationId: null,
 
-                pageSize: 10,    //    每页的数据
+                pageSize: 10,    //每页的数据
                 currentPage: 1,//第几页
-                totalCount: 1,//总条数 这些数据虽然后面会赋值为后端返回的数，但是最好不要为空
+                totalCount: 1,//总条数
+
+                isHotelNameExist: false,
+                isHotelOtherNameExist: false,
             }
         },
         methods: {
@@ -566,19 +572,20 @@
                 this.currentPage = val
                 this.hotelInfoList(this.pageSize, val)
             },
-
-
+            //获取酒店类型列表
             getHotelTypesList() {
                 this.$http.get('http://127.0.0.1:8888/config/list', {params: {parentId: 1005}}).then(function (res) {
                     this.hotelTypesList = res.body.data;
                 })
             },
+            //获取区域列表
             getDistrictList() {
                 this.$http.get('http://127.0.0.1:8888/hotel/district/list').then(function (res) {
                     this.districtList = res.body.data;
                     this.districtAddList = this.districtList;
                 })
             },
+            //获取街道列表
             getStreetList(district) {
                 this.$http.get('http://127.0.0.1:8888/hotel/street/list', {params: {district: district}}).then(function (res) {
                     this.street = null;
@@ -597,6 +604,7 @@
                     this.streetUpdateList = res.body.data;
                 })
             },
+            //重置查询条件
             reset() {
                 this.district = null,
                     this.street = null,
@@ -605,6 +613,7 @@
                     this.hotelTypes = null,
                     this.hotelName = null
             },
+            //获取酒店列表
             hotelInfoList(pageSize, pageNum) {
                 let data = {
                     district: this.district,
@@ -647,12 +656,14 @@
                     }))
                 })
             },
+            //打开新增酒店弹框
             openAdd() {
                 this.hotelTypeAdd = null;
                 this.hotelTypesIdList = null;
                 this.hotelTypeAddList = null;
                 this.dialogVisibleAdd = true;
             },
+            //打开修改酒店弹框
             openUpdate(row) {
                 this.hotelTypeUpdateIdList = '';
                 this.hotelTypesListUpate = null;
@@ -712,6 +723,7 @@
                 this.house5TotalCount = null;
                 this.house6TotalCount = null;
             },
+            //分配房源
             allocationOfHousing() {
                 this.$http.post('http://127.0.0.1:8888/hotel/house/allocation', {
                     id: this.allocationId,
@@ -732,17 +744,93 @@
                 this.dialogVisibleAOH = false;
                 this.resetAllocation();
             },
+            //取消分配房源
             cancelAllocation() {
                 this.dialogVisibleAOH = false;
                 this.resetAllocation();
             },
+            //增加酒店
             addHotelInfo() {
-                if (this.hotelTypeAdd == null || this.hotelTypeAdd == '') {
-                    this.$message.error("请选择酒店类型")
+                if (this.hotelNameAdd == null || this.hotelNameAdd == '') {
+                    this.$message.error("请输入酒店名称");
                     return;
                 }
-                if (this.hotelNameAdd == null) {
-                    this.$message.error("请输入酒店名称")
+                if (this.hotelOtherNameAdd == null || this.hotelOtherNameAdd == '') {
+                    this.$message.error("请输入酒店别名");
+                    return;
+                }
+                if (this.contractUserAdd == null || this.contractUserAdd == '') {
+                    this.$message.error("请输入联系人");
+                    return;
+                }
+                if (this.contractMobileAdd == null || this.contractMobileAdd == '') {
+                    this.$message.error("请输入联系电话");
+                    return;
+                } else {
+                    const reg = /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/;
+                    if (!reg.test(this.contractMobileAdd)) {
+                        this.$message.error("电话号码格式不正确");
+                        return;
+                        ;
+                    }
+                }
+                if (this.hotelTypeAdd == null || this.hotelTypeAdd == '') {
+                    this.$message.error("请选择酒店类型");
+                    return;
+                }
+                if (this.addressAdd == null || this.addressAdd == '') {
+                    this.$message.error("请输入详细地址");
+                    return;
+                }
+                if (this.districtAdd == null || this.districtAdd == '') {
+                    this.$message.error("请选择区域");
+                }
+                if (this.streetAdd == null || this.streetAdd == '') {
+                    this.$message.error("请选择街道");
+                    return;
+                }
+                if (this.deletedAdd == null || this.deletedAdd == '') {
+                    this.$message.error("请选择是否删除");
+                    return;
+                }
+                if (this.notshowAdd == null || this.notshowAdd == '') {
+                    this.$message.error("请选择是否展示");
+                    return;
+                }
+                if (this.hotelUsernameAdd == null || this.hotelUsernameAdd == '') {
+                    this.$message.error("请输入酒店登录账号");
+                    return;
+                }
+                if (this.hotelPasswordAdd == null || this.hotelPasswordAdd == '') {
+                    this.$message.error("请输入酒店登录密码");
+                    return;
+                }
+                if (this.hotelPasswordAdd.length < 8) {
+                    this.$message.error("酒店登录密码不应少于8位");
+                    return;
+                }
+                if (this.confirmHotelPasswordAdd == null || this.confirmHotelPasswordAdd == '') {
+                    this.$message.error("请再次输入酒店登录密码")
+                    return;
+                }
+                if (this.confirmHotelPasswordAdd != this.hotelPasswordAdd) {
+                    this.$message.error("两次输入密码不一致")
+                    return;
+                }
+                if (this.controlDateAdd == null || this.controlDateAdd == '') {
+                    this.$message.error("请选择管控日期");
+                    return;
+                }
+                if (this.isReportAdd == null || this.isReportAdd == '') {
+                    this.$message.error("请选择是否上报");
+                    return;
+                }
+                if (this.reserveDateAdd == null || this.reserveDateAdd == '') {
+                    this.$message.error("请选择可预定日期");
+                    return;
+                }
+                if (this.areaTypeAdd == null || this.areaTypeAdd == '') {
+                    this.$message.error("请选择房源");
                     return;
                 }
                 let data = {
@@ -769,14 +857,14 @@
                     data.reserveDate = this.$moment(this.reserveDateAdd).format('YYYY-MM-DD')
                 }
                 this.$http.post('http://127.0.0.1:8888/hotel/info/add', data, {emulateJSON: true}).then(function (res) {
-                    if (res.status == 200) {
+                    if (res.body.status == 200) {
                         this.$message.success("新增成功")
+                        this.dialogVisibleAdd = false;
+                        this.hotelInfoList();
+                        this.clearAdd();
                     } else {
-                        this.$message.error("新增失败")
+                        this.$message.error(res.body.msg)
                     }
-                    this.dialogVisibleAdd = false;
-                    this.hotelInfoList();
-                    this.clearAdd();
                 })
 
             },
@@ -785,6 +873,7 @@
                 this.clearAdd();
             },
             clearAdd() {
+                this.confirmHotelPasswordAdd = null;
                 this.hotelTypeAddList = null;
                 this.districtAdd = null;
                 this.streetAdd = null;
@@ -805,7 +894,82 @@
                 this.controlDateAdd = null;
                 this.reserveDateAdd = null;
             },
+            //修改酒店
             updateHotel() {
+                if (this.hotelNameUpdate == null || this.hotelNameUpdate == '') {
+                    this.$message.error("请输入酒店名称");
+                    return;
+                }
+                if (this.hotelOtherNameUpdate == null || this.hotelOtherNameUpdate == '') {
+                    this.$message.error("请输入酒店别名");
+                    return;
+                }
+                if (this.contractUserUpdate == null || this.contractUserUpdate == '') {
+                    this.$message.error("请输入联系人");
+                    return;
+                }
+                if (this.contractMobileUpdate == null || this.contractMobileUpdate == '') {
+                    this.$message.error("请输入联系电话");
+                    return;
+                } else {
+                    const reg = /^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\d{8}$/;
+                    if (!reg.test(this.contractMobileUpdate)) {
+                        this.$message.error("电话号码格式不正确");
+                        return;
+                        ;
+                    }
+                }
+                if (this.hotelTypeUpdate == null || this.hotelTypeUpdate == '') {
+                    this.$message.error("请选择酒店类型");
+                    return;
+                }
+                if (this.addressUpdate == null || this.addressUpdate == '') {
+                    this.$message.error("请输入详细地址");
+                    return;
+                }
+                if (this.districtUpdate == null || this.districtUpdate == '') {
+                    this.$message.error("请选择区域");
+                }
+                if (this.streetUpdate == null || this.streetUpdate == '') {
+                    this.$message.error("请选择街道");
+                    return;
+                }
+                if (this.deletedUpdate == null || this.deletedUpdate == '') {
+                    this.$message.error("请选择是否删除");
+                    return;
+                }
+                if (this.notshowUpdate == null || this.notshowUpdate == '') {
+                    this.$message.error("请选择是否展示");
+                    return;
+                }
+                if (this.hotelUsernameUpdate == null || this.hotelUsernameUpdate == '') {
+                    this.$message.error("请输入酒店登录账号");
+                    return;
+                }
+                if (this.hotelPasswordUpdate == null || this.hotelPasswordUpdate == '') {
+                    this.$message.error("请输入酒店登录密码");
+                    return;
+                }
+                if (this.hotelPasswordUpdate.length < 8) {
+                    this.$message.error("酒店登录密码不应少于8位");
+                    return;
+                }
+                if (this.confirmHotelPasswordUpdate == null || this.confirmHotelPasswordUpdate == '') {
+                    this.$message.error("请再次输入酒店登录密码")
+                    return;
+                }
+                if (this.confirmHotelPasswordUpdate != this.hotelPasswordUpdate) {
+                    this.$message.error("两次输入密码不一致")
+                    return;
+                }
+                if (this.isReportUpdate == null || this.isReportUpdate == '') {
+                    this.$message.error("请选择是否上报");
+                    return;
+                }
+                if (this.areaTypeUpdate == null || this.areaTypeUpdate == '') {
+                    this.$message.error("请选择房源");
+                    return;
+                }
                 let data = {
                     id: this.updateId
                 };
@@ -826,14 +990,14 @@
                     data.isReport = this.isReportUpdate,
                     data.areaType = this.areaTypeUpdate,
                     this.$http.post('http://127.0.0.1:8888/hotel/info/update', data, {emulateJSON: true}).then(function (res) {
-                        if (res.status == 200) {
+                        if (res.body.status == 200) {
                             this.$message.success("修改成功")
+                            this.dialogVisibleUpdate = false;
+                            this.hotelInfoList();
+                            this.clearUpdate();
                         } else {
-                            this.$message.error("修改失败")
+                            this.$message.error(res.body.msg)
                         }
-                        this.dialogVisibleUpdate = false;
-                        this.hotelInfoList();
-                        this.clearUpdate();
                     })
             },
             cancelUpdate() {
@@ -863,6 +1027,7 @@
                 this.controlDateUpdate = null;
                 this.reserveDateUpdate = null;
             },
+            //删除酒店
             handleDelete(id) {
                 this.$http.get('http://127.0.0.1:8888/hotel/info/delete', {params: {id: id}}).then(function (res) {
                     if (res.status == 200) {
@@ -873,6 +1038,7 @@
                     this.hotelInfoList();
                 })
             },
+            //酒店类型选择(多选)
             hotelTypesChoice(hotelTypeAdd) {
                 let str = '';
                 this.hotelTypesIdList = '';
@@ -908,6 +1074,7 @@
                 }
                 this.hotelTypeAdd = str;
             },
+            //酒店类型选择(多选)
             updateHotelTypes(hotelTypeUpdate) {
                 if (this.hotelTypesListUpate != null && this.hotelTypesListUpate.length > 0) {
                     if (this.hotelTypesListUpate.includes(hotelTypeUpdate.id.toString())) {
@@ -937,7 +1104,7 @@
                     }
                 }
                 this.hotelTypeUpdate = str;
-            }
+            },
         },
         mounted() {
             this.getHotelTypesList();

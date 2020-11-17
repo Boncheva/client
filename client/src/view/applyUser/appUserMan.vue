@@ -275,10 +275,11 @@
     <el-dialog title="重置密码" :visible.sync="dialogVisibleRP" :close-on-click-modal="true" :modal="true"
                :show-close="true"
                :center="true">
-        <el-input v-model="newPassWord" placeholder="请输入新密码"></el-input>
+        <el-input v-model="newPassWord" placeholder="请输入新密码" show-password></el-input>
+        <el-input v-model="confirmTheNewPassword" placeholder="请再次输入新密码" show-password></el-input>
         <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisibleRP = false">取 消</el-button>
-        <el-button type="primary" @click="resetPassword(newPassWord)">确 定</el-button>
+        <el-button type="primary" @click="resetPassword">确 定</el-button>
         </span>
     </el-dialog>
     </body>
@@ -310,6 +311,7 @@
                 dialogVisible: false,
                 dialogVisibleRP: false,
                 newPassWord: null,
+                confirmTheNewPassword: null,
                 userInfo: {
                     hsRgCheckDate: '',
                     sqCheckDate: '',
@@ -317,9 +319,9 @@
                 },
 
 
-                pageSize: 10,    //    每页的数据
+                pageSize: 10,    //每页的数据
                 currentPage: 1,//第几页
-                totalCount: 1,//总条数 这些数据虽然后面会赋值为后端返回的数，但是最好不要为空
+                totalCount: 1,//总条数
             }
         },
         methods: {
@@ -334,7 +336,7 @@
                 this.currentPage = val
                 this.appUserList(this.pageSize, val)
             },
-
+            //用户列表
             appUserList(pageSize, pageNum) {
                 let data = {
                     province: this.province,
@@ -426,6 +428,7 @@
                     }
                 })
             },
+            //初始化查询条件
             initForm() {
                 this.province = null,
                     this.city = null,
@@ -438,6 +441,7 @@
                     this.cities = [],
                     this.areas = []
             },
+            //获取省份
             getProvinces() {
                 this.$http.post('http://127.0.0.1:8888/userInfo/area/list', {}, {emulateJSON: true})
                     .then(
@@ -446,6 +450,7 @@
                         },
                     )
             },
+            //获取城市
             getCities(id) {
                 this.city = null;
                 this.area = null;
@@ -456,6 +461,7 @@
                         },
                     )
             },
+            //获取地区
             getareas(id) {
                 this.area = null;
                 this.$http.post('http://127.0.0.1:8888/userInfo/area/list', {id: id}, {emulateJSON: true})
@@ -465,6 +471,7 @@
                         },
                     )
             },
+            //获取用户详细信息
             userInfoDetail(row) {
                 this.dialogVisible = true;
                 this.$http.get('http://127.0.0.1:8888/userInfo/user/info', {params: {userId: row.id}}).then(function (res) {
@@ -505,33 +512,51 @@
                     }
                 })
             },
-
+            //弹出用户详情框
             open(row) {
                 this.userId = row.id;
-                console.log(this.userId)
                 this.dialogVisibleRP = true;
             },
-            resetPassword(password) {
-                if (password) {
-                    this.$http.post('http://127.0.0.1:8888/userInfo/resetpwd', {
-                        id: this.userId,
-                        passwd: password
-                    }, {emulateJSON: true}).then((res) => {
-                        if (res.body.status != 200) {
-                            this.$notify({
-                                title: '修改失败',
-                                type: 'failed'
-                            });
-                        } else {
-                            this.$notify({
-                                title: '修改成功',
-                                type: 'success'
-                            });
-                        }
-                        this.dialogVisibleRP = false;
-                    })
+            //重置密码
+            resetPassword() {
+                if (this.newPassWord == null || this.newPassWord == '') {
+                    this.$message.error("请输入密码");
+                    return;
                 }
+                if (this.newPassWord.length < 8) {
+                    this.$message.error("密码长度不能少于8位")
+                    return;
+                }
+
+                if (this.confirmTheNewPassword == null || this.confirmTheNewPassword == '') {
+                    this.$message.error("请确认密码");
+                    return;
+                }
+                if (this.newPassWord != this.confirmTheNewPassword) {
+                    this.$message.error("两次输入密码不一致")
+                    return;
+                }
+                this.$http.post('http://127.0.0.1:8888/userInfo/resetpwd', {
+                    id: this.userId,
+                    passwd: this.newPassWord
+                }, {emulateJSON: true}).then((res) => {
+                    if (res.body.status != 200) {
+                        this.$notify({
+                            title: '修改失败',
+                            type: 'failed'
+                        });
+                    } else {
+                        this.$notify({
+                            title: '修改成功',
+                            type: 'success'
+                        });
+                    }
+                    this.newPassWord = null;
+                    this.confirmTheNewPassword = null;
+                    this.dialogVisibleRP = false;
+                })
             },
+            //删除用户
             deleteUser(userId) {
                 this.$http.delete('http://127.0.0.1:8888/userInfo/delete', {params: {'userId': userId}}).then((res) => {
                     if (res.body.status != 200) {

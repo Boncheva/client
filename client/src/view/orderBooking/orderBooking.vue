@@ -37,12 +37,6 @@
                             <el-option label="取消" value="9"></el-option>
                         </el-select>
                     </div>
-                    <!--                    <div class="layui-inline">-->
-                    <!--                        <el-select v-model="isSubmit" placeholder="房屋分配状态">-->
-                    <!--                            <el-option label="未提交" value="0"></el-option>-->
-                    <!--                            <el-option label="已提交" value="1"></el-option>-->
-                    <!--                        </el-select>-->
-                    <!--                    </div>-->
                     <div class="layui-inline">
                         <el-select v-model="portType" placeholder="入境口岸">
                             <el-option label="0" value="0"></el-option>
@@ -512,9 +506,9 @@
                 dialogVisibleMt: false,
                 selectionListMt: [],
 
-                pageSize: 10,    //    每页的数据
+                pageSize: 10,    //每页的数据
                 currentPage: 1,//第几页
-                totalCount: 1,//总条数 这些数据虽然后面会赋值为后端返回的数，但是最好不要为空
+                totalCount: 1,//总条数
             }
         },
         methods: {
@@ -529,17 +523,19 @@
                 this.currentPage = val
                 this.orderInfoList(this.pageSize, val)
             },
-
+            //获取酒店类型
             getHotelTypesList() {
                 this.$http.get('http://127.0.0.1:8888/config/list', {params: {parentId: 1005}}).then(function (res) {
                     this.hotelTypesList = res.body.data;
                 })
             },
+            //获取区域列表
             getDistrictList() {
                 this.$http.get('http://127.0.0.1:8888/hotel/district/list').then(function (res) {
                     this.districtList = res.body.data;
                 })
             },
+            //获取街道列表
             getStreetList(district) {
                 this.$http.get('http://127.0.0.1:8888/hotel/street/list', {params: {district: district}}).then(function (res) {
                     this.streetList = res.body.data;
@@ -560,6 +556,7 @@
                     this.hotelInfoListMt = res.body.data;
                 }))
             },
+            //获取订单列表
             orderInfoList(pageSize, pageNum) {
                 // console.log(this.checkinDate);
                 let data = {
@@ -612,6 +609,7 @@
                     }
                 })
             },
+            //重置查询参数
             reset() {
                 this.district = null,
                     this.street = null,
@@ -624,6 +622,7 @@
                     this.oriRemark = null,
                     this.streetList = []
             },
+            //打开订单修改弹框
             open(row) {
                 this.id = row.id;
                 this.$http.post('http://127.0.0.1:8888/hotel/info/list', null, {emulateJSON: true}).then((res) => {
@@ -647,7 +646,36 @@
                 this.fromTypeUpt = row.fromType.toString();
                 this.dialogVisibleUp = true;
             },
+            //更新订单
             updateOrder() {
+                if (this.houseTypeUpt == null || this.houseTypeUpt == '') {
+                    this.$message.error("请选择房间类型");
+                    return;
+                }
+                if (this.checkinDateUpt == null || this.checkinDateUpt == '') {
+                    this.$message.error("请选择入住时间");
+                    return;
+                }
+                if (this.housePriceUpt == null || this.housePriceUpt == '') {
+                    this.$message.error("请填写房间价格");
+                    return;
+                }
+                if (this.statusUpt == null || this.statusUpt == '') {
+                    this.$message.error("请选择状态");
+                    return;
+                }
+                if (this.deletedUpt == null || this.deletedUpt == '') {
+                    this.$message.error("请选择是否删除");
+                    return;
+                }
+                if (this.roomNumUpt == null || this.roomNumUpt == '') {
+                    this.$message.error("请填写入住房号");
+                    return;
+                }
+                if (this.fromTypeUpt == null || this.fromTypeUpt == '') {
+                    this.$message.error("请选择来源");
+                    return;
+                }
                 this.$http.post('http://127.0.0.1:8888/order/update', {
                         id: this.id,
                         hotelId: this.hotelIdUpt,
@@ -672,6 +700,7 @@
                 })
                 this.dialogVisibleUp = false;
             },
+            //获取订单详情（用户信息和酒店信息）
             orderDetail(row) {
                 this.dialogVisible = true;
                 this.$http.get('http://127.0.0.1:8888/order/detail', {params: {id: row.id}}).then(function (res) {
@@ -722,12 +751,14 @@
                     this.hotelInfo = res.body.data.hotelInfo;
                 })
             },
+            //多选列表
             handleSelectionChange(val) {
                 this.multipleSelection = [];
                 for (let i = 0; i < val.length; i++) {
                     this.multipleSelection.push(val[i].id);
                 }
             },
+            //删除订单
             deleteOrder(id) {
                 this.$http.delete('http://127.0.0.1:8888/order/delete', {params: {'id': id}}).then((res) => {
                     if (res.body.status != 200) {
@@ -744,6 +775,7 @@
                     }
                 })
             },
+            //批量删除订单
             deleteOrderList() {
                 if (this.multipleSelection.length == 0) {
                     this.$message.error("请选择要删除的信息");
@@ -773,6 +805,7 @@
                     }
                 })
             },
+            //打开批量转移弹窗
             openMt() {
                 if (this.multipleSelection.length == 0) {
                     this.$message.error("请选择需要转移的信息");
@@ -781,6 +814,7 @@
                 this.dialogVisibleMt = true;
                 this.selectionListMt = this.multipleSelection;
             },
+            //批量转移
             massTransfer() {
                 if (this.hotelMt == null) {
                     this.$message.error("请选择酒店");
@@ -812,6 +846,7 @@
                     this.orderInfoList();
                 })
             },
+            //导出订单列表
             exportOrderInfoList() {
                 if (!this.district) {
                     this.district = '';
@@ -852,6 +887,7 @@
             handlePreview(file) {
                 console.log(file.type);
             },
+            //上传文件的校验
             handleExceed(files, fileList) {
                 this.$message.warning(`当前限制选择2个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
             },

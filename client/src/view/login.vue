@@ -51,8 +51,9 @@
                 }, {emulateJSON: true}).then(function (res) {
                     if (res.body.status == 200) {
                         let userToken = res.body.data.userToken;
+                        //登陆成功，存储token
                         this.$store.commit('changeLogin', {Authorization: userToken});
-                        // this.changeLogin({Authorization: this.userToken});
+                        // 跳转到主页
                         this.$router.push({path: 'index', query: {userName: res.body.data.userInfo.userName}});
                     } else {
                         this.$message.error(res.body.msg)
