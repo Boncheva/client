@@ -3,16 +3,21 @@ package com.yitu.hotel.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.yitu.hotel.mapper.ConfigMapper;
+import com.yitu.hotel.dto.hotel.HotelDto;
+import com.yitu.hotel.exception.CustomException;
 import com.yitu.hotel.mapper.HotelMapper;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.Hotel;
+import com.yitu.hotel.entity.hotel.Hotel;
 import com.yitu.hotel.service.HotelService;
+import com.yitu.hotel.vo.hotel.HotelVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class HotelServiceImpl implements HotelService {
@@ -20,13 +25,14 @@ public class HotelServiceImpl implements HotelService {
     @Autowired
     private HotelMapper hotelMapper;
 
-    @Autowired
-    private ConfigMapper configMapper;
 
     /**
      * 获取区域列表
      *
-     * @return
+     * @param
+     * @return com.yitu.hotel.model.JsonResult<java.util.List < java.lang.String>>
+     * @author zouhao
+     * @date 2020/11/18 10:55
      */
     @Override
     public List<String> districtList() {
@@ -39,7 +45,9 @@ public class HotelServiceImpl implements HotelService {
      * 根据区域获取该区域街道列表
      *
      * @param district
-     * @return
+     * @return com.yitu.hotel.model.JsonResult<java.util.List < java.lang.String>>
+     * @author zouhao
+     * @date 2020/11/18 10:55
      */
     @Override
     public List<String> streetList(String district) {
@@ -50,73 +58,198 @@ public class HotelServiceImpl implements HotelService {
     /**
      * 根据查询条件获取酒店列表
      *
-     * @param hotel
-     * @return
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult<com.github.pagehelper.PageInfo < com.yitu.hotel.entity.hotel.Hotel>>
+     * @author zouhao
+     * @date 2020/11/18 10:56
      */
     @Override
-    public PageInfo<Hotel> hotelInfoList(Hotel hotel) {
-        PageHelper.startPage(hotel.getPageNum(), hotel.getPageSize());
-        List<Hotel> list = hotelMapper.hotelInfoList(hotel);
-        PageInfo<Hotel> pageInfo = new PageInfo<Hotel>(list);
-        return pageInfo;
+    public JsonResult<PageInfo<HotelVo>> hotelInfoList(HotelDto hotelDto) {
+        PageHelper.startPage(hotelDto.getPageNum(), hotelDto.getPageSize());
+        List<HotelVo> list = hotelMapper.hotelInfoList(hotelDto);
+        PageInfo<HotelVo> pageInfo = new PageInfo<>(list);
+        return JsonResult.ok(pageInfo);
     }
 
     /**
      * 新增酒店信息
      *
-     * @param hotel
-     * @return
-     * @throws Exception
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 10:56
      */
     @Override
-    public JsonResult insertHotel(Hotel hotel) throws Exception {
-        //判断酒店名称和别名是否已经存在
-        JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotel);
-        if (jsonResult.getStatus() == 500) {
-            return JsonResult.fail(jsonResult.getMsg());
+    public JsonResult insertHotel(HotelDto hotelDto) {
+        hotelDto.setHotelName(null);
+        if (StringUtils.isBlank(hotelDto.getHotelName())) {
+            throw new CustomException("酒店名称不能为空");
+        } else {
+            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
+            if (jsonResult.getStatus() == 500) {
+                return JsonResult.fail(jsonResult.getMsg());
+            }
         }
-        try {
-            hotel.setHouse1Count(0);
-            hotel.setHouse1ShowCount(0);
-            hotel.setHouse1ControlCount(0);
-            hotel.setHouse2Count(0);
-            hotel.setHouse2ShowCount(0);
-            hotel.setHouse2ControlCount(0);
-            hotel.setHouse3Count(0);
-            hotel.setHouse3ShowCount(0);
-            hotel.setHouse3ControlCount(0);
-            hotel.setHouse4Count(0);
-            hotel.setHouse4ShowCount(0);
-            hotel.setHouse4ControlCount(0);
-            hotel.setHouse5Count(0);
-            hotel.setHouse5ShowCount(0);
-            hotel.setHouse5ControlCount(0);
-            hotel.setHouse6Count(0);
-            hotel.setHouse6ShowCount(0);
-            hotel.setHouse6ControlCount(0);
-            hotelMapper.insert(hotel);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        if (StringUtils.isBlank(hotelDto.getHotelOtherName())) {
+            throw new CustomException("酒店别名不能为空");
+        } else {
+            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
+            if (jsonResult.getStatus() == 500) {
+                return JsonResult.fail(jsonResult.getMsg());
+            }
         }
+        if (StringUtils.isBlank(hotelDto.getHotelTypes())) {
+            throw new CustomException("酒店类型不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getAddress())) {
+            throw new CustomException("酒店详细地址不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getContractUser())) {
+            throw new CustomException("酒店联系人不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getContractMobile())) {
+            throw new CustomException("酒店联系电话不能为空");
+        } else {
+            String pattern = "^(1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9]))\\d{8}$";
+            boolean isMatch = Pattern.matches(pattern, hotelDto.getContractMobile());
+            if (!isMatch) {
+                throw new CustomException("手机格式不正确");
+            }
+        }
+        if (StringUtils.isBlank(hotelDto.getDistrict())) {
+            throw new CustomException("区域不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getStreet())) {
+            throw new CustomException("街道不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getDeleted())) {
+            throw new CustomException("是否删除不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getNotshow())) {
+            throw new CustomException("是否展示不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getHotelUsername())) {
+            throw new CustomException("酒店管理账号不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getHotelPassword())) {
+            throw new CustomException("酒店管理密码不能为空");
+        } else {
+            if (hotelDto.getHotelPassword().length() < 8) {
+                throw new CustomException("酒店管理密码长度不能少于8位");
+            }
+        }
+        if (StringUtils.isBlank(hotelDto.getControlDate())) {
+            throw new CustomException("酒店管控日期不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getReserveDate())) {
+            throw new CustomException("酒店预定日期不能为空");
+        }
+        Hotel hotel = new Hotel();
+        BeanUtils.copyProperties(hotelDto, hotel);
+        hotel.setAddDate(LocalDateTime.now());
+        hotelMapper.insert(hotel);
         return JsonResult.ok();
     }
 
     /**
      * 根据酒店信息id修改酒店信息
      *
-     * @param hotel
-     * @return
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 10:59
      */
     @Override
-    public JsonResult updateHotel(Hotel hotel) throws Exception {
-        JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotel);
-        if (jsonResult.getStatus() == 500) {
-            return JsonResult.fail(jsonResult.getMsg());
+    public JsonResult updateHotel(HotelDto hotelDto) throws Exception {
+        if (StringUtils.isBlank(hotelDto.getId())) {
+            throw new CustomException("参数有误");
+        } else {
+            Hotel hotel = hotelMapper.selectById(hotelDto.getId());
+            if (hotel == null) {
+                throw new CustomException("该酒店不存在");
+            }
         }
-        try {
-            hotelMapper.updateById(hotel);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        if (StringUtils.isBlank(hotelDto.getHotelName())) {
+            throw new CustomException("酒店名称不能为空");
+        } else {
+            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
+            if (jsonResult.getStatus() == 500) {
+                return JsonResult.fail(jsonResult.getMsg());
+            }
+        }
+        if (StringUtils.isBlank(hotelDto.getHotelOtherName())) {
+            throw new CustomException("酒店别名不能为空");
+        } else {
+            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
+            if (jsonResult.getStatus() == 500) {
+                return JsonResult.fail(jsonResult.getMsg());
+            }
+        }
+        if (StringUtils.isBlank(hotelDto.getHotelTypes())) {
+            throw new CustomException("酒店类型不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getAddress())) {
+            throw new CustomException("酒店详细地址不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getContractUser())) {
+            throw new CustomException("酒店联系人不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getContractMobile())) {
+            throw new CustomException("酒店联系电话不能为空");
+        } else {
+            String pattern = "^(1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9]))\\d{8}$";
+            boolean isMatch = Pattern.matches(pattern, hotelDto.getContractMobile());
+            if (!isMatch) {
+                throw new CustomException("手机格式不正确");
+            }
+        }
+        if (StringUtils.isBlank(hotelDto.getDistrict())) {
+            throw new CustomException("区域不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getStreet())) {
+            throw new CustomException("街道不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getDeleted())) {
+            throw new CustomException("是否删除不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getNotshow())) {
+            throw new CustomException("是否展示不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getHotelUsername())) {
+            throw new CustomException("酒店管理账号不能为空");
+        }
+        if (StringUtils.isBlank(hotelDto.getHotelPassword())) {
+            throw new CustomException("酒店管理密码不能为空");
+        } else {
+            if (hotelDto.getHotelPassword().length() < 8) {
+                throw new CustomException("酒店管理密码长度不能少于8位");
+            }
+        }
+        Hotel hotel = new Hotel();
+        hotel.setId(Long.valueOf(hotelDto.getId()));
+        hotel.setHotelName(hotelDto.getHotelName());
+        hotel.setHotelTypes(hotelDto.getHotelTypes());
+        hotel.setAddress(hotelDto.getAddress());
+        hotel.setContractUser(hotelDto.getContractUser());
+        hotel.setContractMobile(hotelDto.getContractMobile());
+        hotel.setDistrict(hotelDto.getDistrict());
+        hotel.setStreet(hotelDto.getStreet());
+        hotel.setRemark(hotelDto.getRemark());
+        if ("0".equals(hotelDto.getDeleted())) {
+            hotel.setDeleted(false);
+        } else {
+            hotel.setDeleted(true);
+        }
+        if ("0".equals(hotelDto.getNotshow())) {
+            hotel.setNotshow(false);
+        } else {
+            hotel.setNotshow(true);
+        }
+        hotel.setHotelUsername(hotelDto.getHotelUsername());
+        hotel.setHotelPassword(hotelDto.getHotelPassword());
+        int i = hotelMapper.updateById(hotel);
+        if (i <= 0) {
+            throw new CustomException("系统错误，修改失败");
         }
         return JsonResult.ok();
     }
@@ -125,14 +258,15 @@ public class HotelServiceImpl implements HotelService {
      * 根据酒店id删除酒店信息
      *
      * @param id
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
      */
     @Override
-    public JsonResult deleteHotel(String id) throws Exception {
-        try {
-            hotelMapper.deleteById(id);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+    public JsonResult deleteHotel(String id) {
+        int i = hotelMapper.deleteById(id);
+        if (i <= 0) {
+            throw new CustomException("系统错误，删除失败");
         }
         return JsonResult.ok();
     }
@@ -140,83 +274,41 @@ public class HotelServiceImpl implements HotelService {
     /**
      * 根据酒店id分配房源
      *
-     * @param hotel
-     * @return
-     * @throws Exception
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
      */
     @Override
-    public JsonResult allocationOfHousing(Hotel hotel) throws Exception {
-        Hotel hotel1 = hotelMapper.selectById(hotel.getId());
-        if (hotel.getHouse1TotalCount() != null) {
-            Integer house1Add = hotel.getHouse1TotalCount();
-            if (hotel1.getHouse1TotalCount() == null) {
-                hotel1.setHouse1TotalCount(0);
-            }
-            if (hotel1.getHouse1ShowCount() == null) {
-                hotel1.setHouse1ShowCount(0);
-            }
-            hotel.setHouse1TotalCount(hotel1.getHouse1TotalCount() + house1Add);
-            hotel.setHouse1ShowCount(hotel1.getHouse1ShowCount() + house1Add);
+    public JsonResult allocationOfHousing(HotelDto hotelDto) throws Exception {
+        if (StringUtils.isBlank(hotelDto.getId())) {
+            throw new CustomException("参数有误");
         }
-        if (hotel.getHouse2TotalCount() != null) {
-            Integer house2Add = hotel.getHouse2TotalCount();
-            if (hotel1.getHouse2TotalCount() == null) {
-                hotel1.setHouse2TotalCount(0);
-            }
-            if (hotel1.getHouse2ShowCount() == null) {
-                hotel1.setHouse2ShowCount(0);
-            }
-            hotel.setHouse2TotalCount(hotel1.getHouse2TotalCount() + house2Add);
-            hotel.setHouse2ShowCount(hotel1.getHouse2ShowCount() + house2Add);
+        Hotel hotel = hotelMapper.selectById(hotelDto.getId());
+        if (hotel == null) {
+            throw new CustomException("该酒店不存在");
         }
-        if (hotel.getHouse3TotalCount() != null) {
-            Integer house3Add = hotel.getHouse3TotalCount();
-            if (hotel1.getHouse3TotalCount() == null) {
-                hotel1.setHouse3TotalCount(0);
-            }
-            if (hotel1.getHouse3ShowCount() == null) {
-                hotel1.setHouse3ShowCount(0);
-            }
-            hotel.setHouse3TotalCount(hotel1.getHouse3TotalCount() + house3Add);
-            hotel.setHouse3ShowCount(hotel1.getHouse3ShowCount() + house3Add);
-        }
-        if (hotel.getHouse4TotalCount() != null) {
-            Integer house4Add = hotel.getHouse4TotalCount();
-            if (hotel1.getHouse4TotalCount() == null) {
-                hotel1.setHouse4TotalCount(0);
-            }
-            if (hotel1.getHouse4ShowCount() == null) {
-                hotel1.setHouse4ShowCount(0);
-            }
-            hotel.setHouse4TotalCount(hotel1.getHouse4TotalCount() + house4Add);
-            hotel.setHouse4ShowCount(hotel1.getHouse4ShowCount() + house4Add);
-        }
-        if (hotel.getHouse5TotalCount() != null) {
-            Integer house5Add = hotel.getHouse5TotalCount();
-            if (hotel1.getHouse5TotalCount() == null) {
-                hotel1.setHouse5TotalCount(0);
-            }
-            if (hotel1.getHouse5ShowCount() == null) {
-                hotel1.setHouse5ShowCount(0);
-            }
-            hotel.setHouse5TotalCount(hotel1.getHouse5TotalCount() + house5Add);
-            hotel.setHouse5ShowCount(hotel1.getHouse5ShowCount() + house5Add);
-        }
-        if (hotel.getHouse6TotalCount() != null) {
-            Integer house6Add = hotel.getHouse6TotalCount();
-            if (hotel1.getHouse6TotalCount() == null) {
-                hotel1.setHouse6TotalCount(0);
-            }
-            if (hotel1.getHouse6ShowCount() == null) {
-                hotel1.setHouse6ShowCount(0);
-            }
-            hotel.setHouse6TotalCount(hotel1.getHouse6TotalCount() + house6Add);
-            hotel.setHouse6ShowCount(hotel1.getHouse6ShowCount() + house6Add);
-        }
-        try {
-            hotelMapper.updateById(hotel);
-        } catch (Exception e) {
-            throw new Exception();
+        hotel.setHouse1TotalCount(hotel.getHouse1TotalCount() + hotelDto.getHouse1TotalCount());
+        hotel.setHouse1ShowCount(hotel.getHouse1ShowCount() + hotelDto.getHouse1TotalCount());
+
+        hotel.setHouse2TotalCount(hotel.getHouse2TotalCount() + hotelDto.getHouse2TotalCount());
+        hotel.setHouse2ShowCount(hotel.getHouse2ShowCount() + hotelDto.getHouse2TotalCount());
+
+        hotel.setHouse3TotalCount(hotel.getHouse3TotalCount() + hotelDto.getHouse3TotalCount());
+        hotel.setHouse3ShowCount(hotel.getHouse3ShowCount() + hotelDto.getHouse3TotalCount());
+
+        hotel.setHouse4TotalCount(hotel.getHouse4TotalCount() + hotelDto.getHouse4TotalCount());
+        hotel.setHouse4ShowCount(hotel.getHouse4ShowCount() + hotelDto.getHouse4TotalCount());
+
+        hotel.setHouse5TotalCount(hotel.getHouse5TotalCount() + hotelDto.getHouse5TotalCount());
+        hotel.setHouse5ShowCount(hotel.getHouse5ShowCount() + hotelDto.getHouse5TotalCount());
+
+        hotel.setHouse6TotalCount(hotel.getHouse6TotalCount() + hotelDto.getHouse6TotalCount());
+        hotel.setHouse6ShowCount(hotel.getHouse6ShowCount() + hotelDto.getHouse6TotalCount());
+
+        int i = hotelMapper.updateById(hotel);
+        if (i <= 0) {
+            throw new CustomException("分配房源失败");
         }
         return JsonResult.ok();
     }
@@ -224,33 +316,35 @@ public class HotelServiceImpl implements HotelService {
     /**
      * 验证酒店名称或者别名是否已经存在(新增或者修改酒店信息的时候调用)
      *
-     * @param hotel
-     * @return
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
      */
     @Override
-    public JsonResult verifyThatTheHotelNameOrAliasExists(Hotel hotel) {
+    public JsonResult verifyThatTheHotelNameOrAliasExists(HotelDto hotelDto) {
         QueryWrapper qw = new QueryWrapper();
-        if (StringUtils.isNotBlank(hotel.getHotelName())) {
-            qw.eq("hotel_name", hotel.getHotelName());
-            if (StringUtils.isNotBlank(hotel.getId().toString())) {
+        if (StringUtils.isNotBlank(hotelDto.getHotelName())) {
+            qw.eq("hotel_name", hotelDto.getHotelName());
+            if (StringUtils.isNotBlank(String.valueOf(hotelDto.getId()))) {
                 //如果参数中包含酒店id，则为更新判断,否则为新增判断
-                qw.ne("id", hotel.getId());
+                qw.ne("id", hotelDto.getId());
             }
             List list = hotelMapper.selectList(qw);
             if (list.size() > 0) {
-                return JsonResult.fail("酒店名称已存在");
+                throw new CustomException("酒店名称已存在");
             }
         }
         qw.clear();
-        if (StringUtils.isNotBlank(hotel.getHotelOtherName())) {
-            qw.eq("hotel_other_name", hotel.getHotelOtherName());
-            if (StringUtils.isNotBlank(hotel.getId().toString())) {
+        if (StringUtils.isNotBlank(hotelDto.getHotelOtherName())) {
+            qw.eq("hotel_other_name", hotelDto.getHotelOtherName());
+            if (StringUtils.isNotBlank(String.valueOf(hotelDto.getId()))) {
                 //如果参数中包含酒店id，则为更新判断,否则为新增判断
-                qw.ne("id", hotel.getId());
+                qw.ne("id", hotelDto.getId());
             }
             List list = hotelMapper.selectList(qw);
             if (list.size() > 0) {
-                return JsonResult.fail("酒店别名已存在");
+                throw new CustomException("酒店别名已存在");
             }
         }
         return JsonResult.ok();

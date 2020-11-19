@@ -3,7 +3,7 @@ package com.yitu.hotel.interceptor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yitu.hotel.enums.ResponseCode;
 import com.yitu.hotel.mapper.TokenMapper;
-import com.yitu.hotel.model.entity.Token;
+import com.yitu.hotel.entity.adminUser.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;

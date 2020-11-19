@@ -1,7 +1,7 @@
 package com.yitu.hotel.controller;
 
+import com.yitu.hotel.dto.adminUser.AdminUserDto;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.AdminUser;
 import com.yitu.hotel.service.AdminUserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,25 +22,31 @@ public class AdminUserController {
 
     /**
      * 用户登录
-     * @param adminUser
+     *
+     * @param adminUserDto
      * @param request
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 10:54
      */
     @ApiOperation(value = "用户登录", notes = "根据用户名和密码登录")
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public JsonResult login(AdminUser adminUser, HttpServletRequest request) {
-        return adminUserService.login(adminUser, request);
+    public JsonResult login(AdminUserDto adminUserDto, HttpServletRequest request) {
+        return adminUserService.login(adminUserDto, request);
     }
 
     /**
      * 用户退出
-     * @param adminUser
+     *
+     * @param adminUserDto
      * @param request
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 10:54
      */
     @ApiOperation(value = "用户退出")
     @RequestMapping(value = "signOut", method = RequestMethod.POST)
-    public JsonResult signOut(AdminUser adminUser, HttpServletRequest request) {
+    public JsonResult signOut(AdminUserDto adminUserDto, HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         return adminUserService.signOut(token);
     }

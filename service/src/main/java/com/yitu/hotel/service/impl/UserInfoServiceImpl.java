@@ -3,13 +3,17 @@ package com.yitu.hotel.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.yitu.hotel.dto.user.UserDto;
+import com.yitu.hotel.exception.CustomException;
 import com.yitu.hotel.mapper.DgtxPlacesMapper;
 import com.yitu.hotel.mapper.UserMapper;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.DgtxPlaces;
-import com.yitu.hotel.model.entity.User;
+import com.yitu.hotel.entity.common.DgtxPlaces;
+import com.yitu.hotel.entity.user.User;
 import com.yitu.hotel.service.UserInfoService;
+import com.yitu.hotel.vo.user.UserVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,44 +31,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     /**
      * 获取用户列表
      *
-     * @param user
-     * @return
+     * @param userDto
+     * @return com.github.pagehelper.PageInfo<com.yitu.hotel.vo.user.UserVo>
+     * @author zouhao
+     * @date 2020/11/18 11:11
      */
     @Override
-    public PageInfo<User> getUserInfoList(User user) {
-        PageHelper.startPage(user.getPageNum(), user.getPageSize());
-        QueryWrapper qw = new QueryWrapper();
-        if (StringUtils.isNotBlank(user.getProvince())) {
-            qw.eq("province", user.getProvince());
-        }
-        if (StringUtils.isNotBlank(user.getCity())) {
-            qw.eq("city", user.getCity());
-        }
-        if (StringUtils.isNotBlank(user.getArea())) {
-            qw.eq("area", user.getArea());
-        }
-        if (StringUtils.isNotBlank(user.getIsSubmit())) {
-            if ("1".equals(user.getIsSubmit())) {
-                qw.isNotNull("report_path");
-            } else {
-                qw.isNull("report_path");
-            }
-        }
-        if (user.getDeleted() != null) {
-            qw.eq("deleted", user.getDeleted());
-        }
-        if (user.getFillStatus() != null) {
-            qw.eq("fill_status", user.getFillStatus());
-        }
-        if (user.getUserType() != null) {
-            qw.eq("user_type", user.getUserType());
-        }
-        if (StringUtils.isNotBlank(user.getIdOrName())) {
-            qw.apply("( user_name like '%" + user.getIdOrName() + "%' or cert_no = '" + user.getIdOrName() + "')");
-        }
-        qw.select("id,cert_type,cert_no,user_name,check_status,sq_check_status,hs_rg_check_status,user_type,from_type,report_path,deleted");
-        List<User> list = userMapper.selectList(qw);
-        PageInfo<User> pageInfo = new PageInfo(list);
+    public PageInfo<UserVo> getUserInfoList(UserDto userDto) {
+        PageHelper.startPage(userDto.getPageNum(), userDto.getPageSize());
+        List<UserVo> list = userMapper.getList(userDto);
+        PageInfo<UserVo> pageInfo = new PageInfo(list);
         return pageInfo;
     }
 
@@ -72,7 +48,9 @@ public class UserInfoServiceImpl implements UserInfoService {
      * 根据条件获取区域列表(省市区)
      *
      * @param dgtxPlaces
-     * @return
+     * @return java.util.List<com.yitu.hotel.entity.common.DgtxPlaces>
+     * @author zouhao
+     * @date 2020/11/18 14:35
      */
     @Override
     public List<DgtxPlaces> getAreaList(DgtxPlaces dgtxPlaces) {
@@ -93,27 +71,54 @@ public class UserInfoServiceImpl implements UserInfoService {
      * 根据用户id获取用户信息
      *
      * @param userId
-     * @return
+     * @return com.yitu.hotel.entity.user.User
+     * @author zouhao
+     * @date 2020/11/18 14:36
      */
     @Override
-    public User getUserInfo(String userId) {
-        QueryWrapper qw;
+    public JsonResult<UserVo> getUserInfo(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            throw new CustomException("参数有误");
+        }
         User user = userMapper.selectById(userId);
-        return user;
+        if (user == null) {
+            throw new CustomException("该用户不存在");
+        }
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(user, userVo);
+        return JsonResult.ok(userVo);
     }
 
     /**
-     * 根据用户id重置用户密码
+     * 据用户id重置用户密码
      *
-     * @param user
-     * @return
+     * @param userDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 14:36
      */
     @Override
-    public JsonResult restPwd(User user) {
-        try {
-            userMapper.updateById(user);
-        } catch (RuntimeException e) {
-            return JsonResult.fail("失败");
+    public JsonResult restPwd(UserDto userDto) {
+        if (StringUtils.isBlank(userDto.getId())) {
+            throw new CustomException("参数有误");
+        }
+        if (StringUtils.isBlank(userDto.getPasswd())) {
+            throw new CustomException("密码不能为空");
+        } else {
+            if (userDto.getPasswd().length() < 8) {
+                throw new CustomException("密码长度不能少于8位");
+            }
+        }
+        User user = userMapper.selectById(userDto.getId());
+        if (user == null) {
+            throw new CustomException("该用户不存在");
+        }
+        user = new User();
+        user.setId(Long.parseLong(userDto.getId()));
+        user.setPasswd(userDto.getPasswd());
+        int i = userMapper.updateById(user);
+        if (i <= 0) {
+            throw new CustomException("系统错误，修改失败");
         }
         return JsonResult.ok();
     }
@@ -122,14 +127,15 @@ public class UserInfoServiceImpl implements UserInfoService {
      * 根据用户id删除用户信息
      *
      * @param userId
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 14:36
      */
     @Override
     public JsonResult deleteUser(String userId) {
-        try {
-            userMapper.deleteById(userId);
-        } catch (RuntimeException e) {
-            return JsonResult.fail("失败");
+        int i = userMapper.deleteById(userId);
+        if (i <= 0) {
+            throw new CustomException("系统错误，删除失败");
         }
         return JsonResult.ok();
     }

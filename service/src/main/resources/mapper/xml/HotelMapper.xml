@@ -3,7 +3,7 @@
 <mapper namespace="com.yitu.hotel.mapper.HotelMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.Hotel">
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.entity.hotel.Hotel">
         <id column="id" property="id"/>
         <result column="hotel_name" property="hotelName"/>
         <result column="hotel_other_name" property="hotelOtherName"/>
@@ -70,12 +70,16 @@
     <sql id="Base_Column_List">
         id, hotel_name, hotel_other_name, hotel_types, address, contract_user, contract_mobile, district, street, house1_total_count, house1_show_count, house1_count, house1_control_count, house1_price, house1_remark, house2_total_count, house2_show_count, house2_count, house2_control_count, house2_price, house2_remark, house3_total_count, house3_show_count, house3_count, house3_control_count, occupancy_today, check_out_today, house3_price, house3_remark, remark, add_date, modify_date, deleted, notshow, hotel_username, hotel_password, url, last_synch_date, control_date, reserve_date, is_report, area_type, house4_total_count, house4_show_count, house4_count, house4_control_count, house4_price, house4_remark, house5_total_count, house5_show_count, house5_count, house5_control_count, house5_price, house5_remark, house6_total_count, house6_show_count, house6_count, house6_control_count, house6_price, house6_remark
     </sql>
+
+    <!-- 获取区域列表-->
     <select id="selectListGroupBydistrict" resultType="java.lang.String">
         select district
             from hotel
             where district is not null and district != ''
             group by district
     </select>
+
+    <!--    根据查询条件获取酒店列表-->
     <select id="selectListGroupByStreet" resultType="java.lang.String">
         select street
             from hotel
@@ -84,7 +88,16 @@
               and street != ''
             group by street
     </select>
-    <select id="hotelInfoList" resultType="com.yitu.hotel.model.entity.Hotel">
+
+    <!--
+     * 根据查询条件获取酒店列表
+     *
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult<com.github.pagehelper.PageInfo < com.yitu.hotel.entity.hotel.Hotel>>
+     * @author zouhao
+     * @date 2020/11/18 10:56
+     -->
+    <select id="hotelInfoList" resultType="com.yitu.hotel.vo.hotel.HotelVo">
         select x.id,
         x.hotel_name,
         x.hotel_other_name,

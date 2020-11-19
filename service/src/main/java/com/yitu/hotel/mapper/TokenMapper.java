@@ -1,7 +1,7 @@
 package com.yitu.hotel.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.yitu.hotel.model.entity.Token;
+import com.yitu.hotel.entity.adminUser.Token;
 
 /**
  * <p>

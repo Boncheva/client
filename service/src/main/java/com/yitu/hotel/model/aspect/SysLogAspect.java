@@ -3,9 +3,9 @@ package com.yitu.hotel.model.aspect;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yitu.hotel.mapper.AdminUserMapper;
 import com.yitu.hotel.mapper.TokenMapper;
-import com.yitu.hotel.model.entity.AdminUser;
-import com.yitu.hotel.model.entity.OperationLog;
-import com.yitu.hotel.model.entity.Token;
+import com.yitu.hotel.entity.adminUser.AdminUser;
+import com.yitu.hotel.entity.common.OperationLog;
+import com.yitu.hotel.entity.adminUser.Token;
 import com.yitu.hotel.service.OperationLogService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -43,11 +43,22 @@ public class SysLogAspect {
 
     /**
      * 监听每个controller方法
+     *
+     * @param
+     * @return void
+     * @author zouhao
+     * @date 2020/11/18 18:51
      */
     @Pointcut("execution(public * com.yitu.hotel.controller.*Controller.*(..))")
     public void logPointCut() {
     }
 
+    /**
+     * @param point
+     * @return java.lang.Object
+     * @author zouhao
+     * @date 2020/11/18 18:51
+     */
     @Around("logPointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         try {
@@ -58,6 +69,14 @@ public class SysLogAspect {
         return point.proceed();
     }
 
+    /**
+     * 保存日志
+     *
+     * @param joinPoint
+     * @return void
+     * @author zouhao
+     * @date 2020/11/18 18:52
+     */
     private void saveLog(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
         String token = request.getHeader("Authorization");
         Token tokenBean = null;
@@ -101,7 +120,14 @@ public class SysLogAspect {
         operationLogService.saveLog(ol);
     }
 
-    //获取客户端IP地址
+    /**
+     * 获取ip地址
+     *
+     * @param
+     * @return java.lang.String
+     * @author zouhao
+     * @date 2020/11/18 18:52
+     */
     private String getIpAddress() {
         String ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || "unknow".equalsIgnoreCase(ip)) {

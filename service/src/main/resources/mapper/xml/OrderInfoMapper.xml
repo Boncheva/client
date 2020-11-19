@@ -3,7 +3,7 @@
 <mapper namespace="com.yitu.hotel.mapper.OrderInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.OrderInfo">
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.entity.order.OrderInfo">
         <id column="id" property="id"/>
         <result column="hotel_id" property="hotelId"/>
         <result column="house_type" property="houseType"/>
@@ -33,7 +33,16 @@
     <sql id="Base_Column_List">
         id, hotel_id, house_type, user_id, user_type, price, checkin_date, status, add_date, real_checkin_date, cancel_date, modify_date, deleted, operate_user, operate_date, checkout_date, room_num, remark, check_date, check_user, check_reason, from_type, ori_remark
     </sql>
-    <select id="orderInfoList" resultType="com.yitu.hotel.model.entity.OrderInfo">
+
+    <!--
+     * 获取酒店订单列表
+     *
+     * @param orderInfoDto
+     * @return com.github.pagehelper.PageInfo<com.yitu.hotel.vo.order.OrderInfoVo>
+     * @author zouhao
+     * @date 2020/11/18 16:04
+     -->
+    <select id="orderInfoList" resultType="com.yitu.hotel.vo.order.OrderInfoVo">
         select b.user_name as userName,
         b.sex as sex,
         b.age as age,
@@ -50,7 +59,7 @@
         <if test="street!=null and street!=''">
             and h.street = #{street}
         </if>
-        <if test="status!=null">
+        <if test="status!=null and status!=''">
             and a.status = #{status}
         </if>
         <if test="portType!=null and portType!=''">

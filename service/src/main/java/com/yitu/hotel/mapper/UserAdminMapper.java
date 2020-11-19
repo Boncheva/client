@@ -1,6 +1,6 @@
 package com.yitu.hotel.mapper;
 
-import com.yitu.hotel.model.entity.UserAdmin;
+import com.yitu.hotel.entity.common.UserAdmin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

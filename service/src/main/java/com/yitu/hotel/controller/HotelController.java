@@ -1,9 +1,11 @@
 package com.yitu.hotel.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.yitu.hotel.dto.hotel.HotelDto;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.Hotel;
+import com.yitu.hotel.entity.hotel.Hotel;
 import com.yitu.hotel.service.HotelService;
+import com.yitu.hotel.vo.hotel.HotelVo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,12 @@ public class HotelController {
     private HotelService hotelService;
 
     /**
-     * 获取区域列表
+     * 获取字典数据（酒店类型，来源等等）
      *
-     * @return
+     * @param
+     * @return com.yitu.hotel.model.JsonResult<java.util.List < java.lang.String>>
+     * @author zouhao
+     * @date 2020/11/18 10:55
      */
     @ApiOperation(value = "获取区域列表")
     @RequestMapping(value = "district/list", method = RequestMethod.GET)
@@ -34,7 +39,9 @@ public class HotelController {
      * 根据区域获取该区域街道列表
      *
      * @param district
-     * @return
+     * @return com.yitu.hotel.model.JsonResult<java.util.List < java.lang.String>>
+     * @author zouhao
+     * @date 2020/11/18 10:55
      */
     @ApiOperation(value = "获取街道街道")
     @RequestMapping(value = "street/list", method = RequestMethod.GET)
@@ -46,28 +53,30 @@ public class HotelController {
     /**
      * 根据查询条件获取酒店列表
      *
-     * @param hotel
-     * @return
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult<com.github.pagehelper.PageInfo < com.yitu.hotel.entity.hotel.Hotel>>
+     * @author zouhao
+     * @date 2020/11/18 10:56
      */
     @ApiOperation(value = "获取酒店列表")
-    @RequestMapping(value = "info/list", method = RequestMethod.POST)
-    public JsonResult<PageInfo<Hotel>> hotelInfoList(Hotel hotel) {
-        PageInfo<Hotel> hotelInfoList = hotelService.hotelInfoList(hotel);
-        return JsonResult.ok(hotelInfoList);
+    @RequestMapping(value = "list", method = RequestMethod.POST)
+    public JsonResult<PageInfo<HotelVo>> hotelInfoList(HotelDto hotelDto) {
+        return hotelService.hotelInfoList(hotelDto);
     }
 
     /**
      * 新增酒店信息
      *
-     * @param hotel
-     * @return
-     * @throws Exception
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 10:56
      */
     @ApiOperation(value = "新增酒店")
-    @RequestMapping(value = "info/add", method = RequestMethod.POST)
-    public JsonResult insertHotel(Hotel hotel) {
+    @RequestMapping(value = "add", method = RequestMethod.POST)
+    public JsonResult insertHotel(HotelDto hotelDto) {
         try {
-            return hotelService.insertHotel(hotel);
+            return hotelService.insertHotel(hotelDto);
         } catch (Exception e) {
             return JsonResult.fail(e.getMessage());
         }
@@ -76,14 +85,16 @@ public class HotelController {
     /**
      * 根据酒店信息id修改酒店信息
      *
-     * @param hotel
-     * @return
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 10:59
      */
     @ApiOperation(value = "修改酒店")
-    @RequestMapping(value = "info/update", method = RequestMethod.POST)
-    public JsonResult updateHotel(Hotel hotel) {
+    @RequestMapping(value = "edit", method = RequestMethod.POST)
+    public JsonResult updateHotel(HotelDto hotelDto) {
         try {
-            return hotelService.updateHotel(hotel);
+            return hotelService.updateHotel(hotelDto);
         } catch (Exception e) {
             return JsonResult.fail(e.getMessage());
         }
@@ -93,10 +104,12 @@ public class HotelController {
      * 根据酒店id删除酒店信息
      *
      * @param id
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
      */
     @ApiOperation(value = "删除酒店")
-    @RequestMapping(value = "info/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
     public JsonResult deleteHotel(String id) {
         try {
             return hotelService.deleteHotel(id);
@@ -108,14 +121,15 @@ public class HotelController {
     /**
      * 根据酒店id分配房源
      *
-     * @param hotel
-     * @return
-     * @throws Exception
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
      */
     @RequestMapping(value = "house/allocation", method = RequestMethod.POST)
-    public JsonResult allocationOfHousing(Hotel hotel) {
+    public JsonResult allocationOfHousing(HotelDto hotelDto) {
         try {
-            return hotelService.allocationOfHousing(hotel);
+            return hotelService.allocationOfHousing(hotelDto);
         } catch (Exception e) {
             return JsonResult.fail(null);
         }
@@ -124,12 +138,14 @@ public class HotelController {
     /**
      * 验证酒店名称或者别名是否已经存在(新增或者修改酒店信息的时候调用)
      *
-     * @param hotel
-     * @return
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
      */
     @RequestMapping(value = "verify/hotel", method = RequestMethod.POST)
-    public JsonResult verifyThatTheHotelNameOrAliasExists(Hotel hotel) {
-        return hotelService.verifyThatTheHotelNameOrAliasExists(hotel);
+    public JsonResult verifyThatTheHotelNameOrAliasExists(HotelDto hotelDto) {
+        return hotelService.verifyThatTheHotelNameOrAliasExists(hotelDto);
     }
 
 }

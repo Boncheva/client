@@ -1,6 +1,6 @@
 package com.yitu.hotel.mapper;
 
-import com.yitu.hotel.model.entity.JafRegion;
+import com.yitu.hotel.entity.common.JafRegion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

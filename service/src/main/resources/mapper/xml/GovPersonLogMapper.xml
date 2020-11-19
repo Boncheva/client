@@ -3,7 +3,7 @@
 <mapper namespace="com.yitu.hotel.mapper.GovPersonLogMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.GovPersonLog">
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.entity.common.GovPersonLog">
         <id column="id" property="id" />
         <result column="log_date" property="logDate" />
         <result column="hotel_id" property="hotelId" />

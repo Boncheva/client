@@ -3,7 +3,7 @@
 <mapper namespace="com.yitu.hotel.mapper.HotelLogMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.HotelLog">
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.entity.hotel.HotelLog">
         <id column="id" property="id" />
         <result column="hotel_id" property="hotelId" />
         <result column="log_date" property="logDate" />

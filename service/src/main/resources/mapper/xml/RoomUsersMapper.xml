@@ -3,7 +3,7 @@
 <mapper namespace="com.yitu.hotel.mapper.RoomUsersMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.yitu.hotel.model.entity.RoomUsers">
+    <resultMap id="BaseResultMap" type="com.yitu.hotel.entity.room.RoomUsers">
         <id column="id" property="id" />
         <result column="user_name" property="userName" />
         <result column="cert_type" property="certType" />

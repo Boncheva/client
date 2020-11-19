@@ -1,15 +1,18 @@
 package com.yitu.hotel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yitu.hotel.dto.adminUser.AdminUserDto;
+import com.yitu.hotel.exception.CustomException;
 import com.yitu.hotel.mapper.AdminUserMapper;
 import com.yitu.hotel.mapper.TokenMapper;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.AdminUser;
-import com.yitu.hotel.model.entity.Token;
+import com.yitu.hotel.entity.adminUser.AdminUser;
+import com.yitu.hotel.entity.adminUser.Token;
 import com.yitu.hotel.service.AdminUserService;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
 
@@ -30,17 +34,18 @@ public class AdminUserServiceImpl implements AdminUserService {
     /**
      * 用户登录
      *
-     * @param adminUser
+     * @param adminUserDto
      * @param request
      * @return
      */
     @Override
-    public JsonResult login(AdminUser adminUser, HttpServletRequest request) {
+    public JsonResult login(AdminUserDto adminUserDto, HttpServletRequest request) {
         QueryWrapper qw = new QueryWrapper();
-        qw.eq("mobile", adminUser.getMobile());
-        qw.eq("passwd", adminUser.getPasswd());
+        qw.eq("mobile", adminUserDto.getMobile());
+        qw.eq("passwd", adminUserDto.getPasswd());
         AdminUser result = adminUserMapper.selectOne(qw);
         if (result == null) {
+            log.error("用户名或密码错误");
             return JsonResult.fail("用户名或密码错误");
         } else {
             //验证通过，绑定token
@@ -90,12 +95,11 @@ public class AdminUserServiceImpl implements AdminUserService {
             TokenStr = creatToken(userId, date);
             token.setToken(TokenStr);
             token.setBuildTime(nowTime);
-            tokenMapper.updateById(token);
+            int i = tokenMapper.updateById(token);
+            if (i <= 0) {
+                throw new CustomException("更新token失败");
+            }
         }
-//        UserQueryForm queryForm = getUserInfo(user, TokenStr);
-//
-//        //返回Token信息给客户端
-//        successful(map);
         return TokenStr;
     }
 

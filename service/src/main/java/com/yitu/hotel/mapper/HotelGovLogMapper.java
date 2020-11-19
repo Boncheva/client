@@ -1,6 +1,6 @@
 package com.yitu.hotel.mapper;
 
-import com.yitu.hotel.model.entity.HotelGovLog;
+import com.yitu.hotel.entity.hotel.HotelGovLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

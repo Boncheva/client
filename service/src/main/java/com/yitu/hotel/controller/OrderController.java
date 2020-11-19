@@ -1,9 +1,15 @@
 package com.yitu.hotel.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.yitu.hotel.dto.hotel.HotelDto;
+import com.yitu.hotel.dto.order.OrderInfoDto;
+import com.yitu.hotel.entity.hotel.Hotel;
+import com.yitu.hotel.exception.CustomException;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.model.entity.OrderInfo;
+import com.yitu.hotel.entity.order.OrderInfo;
 import com.yitu.hotel.service.OrderService;
+import com.yitu.hotel.vo.hotel.HotelVo;
+import com.yitu.hotel.vo.order.OrderInfoVo;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +35,15 @@ public class OrderController {
     /**
      * 获取酒店订单列表
      *
-     * @param orderInfo
-     * @return
+     * @param orderInfoDto
+     * @return com.yitu.hotel.model.JsonResult<com.github.pagehelper.PageInfo < com.yitu.hotel.entity.order.OrderInfo>>
+     * @author zouhao
+     * @date 2020/11/18 11:03
      */
     @ApiOperation(value = "获取酒店订单列表")
     @RequestMapping(value = "list", method = RequestMethod.POST)
-    public JsonResult<PageInfo<OrderInfo>> orderInfoList(OrderInfo orderInfo) {
-        PageInfo<OrderInfo> pageInfo = orderService.orderInfoList(orderInfo);
+    public JsonResult<PageInfo<OrderInfoVo>> orderInfoList(OrderInfoDto orderInfoDto) {
+        PageInfo<OrderInfoVo> pageInfo = orderService.orderInfoList(orderInfoDto);
         return JsonResult.ok(pageInfo);
     }
 
@@ -43,7 +51,9 @@ public class OrderController {
      * 根据订单id删除订单信息
      *
      * @param id
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:03
      */
     @ApiOperation(value = "删除酒店")
     @RequestMapping(value = "delete", method = RequestMethod.DELETE)
@@ -54,13 +64,30 @@ public class OrderController {
     /**
      * 根据订单id集合批量删除订单
      *
-     * @param orderInfo
-     * @return
+     * @param orderInfoDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:03
      */
     @ApiOperation(value = "批量删除酒店")
     @RequestMapping(value = "deleteList", method = RequestMethod.POST)
-    public JsonResult deleteOrderList(OrderInfo orderInfo) {
-        return orderService.deleteOrderList(orderInfo);
+    public JsonResult deleteOrderList(OrderInfoDto orderInfoDto) {
+        return orderService.deleteOrderList(orderInfoDto);
+    }
+
+
+    /**
+     * 获取酒店列表
+     *
+     * @param hotelDto
+     * @return java.util.List<com.yitu.hotel.entity.hotel.Hotel>
+     * @author zouhao
+     * @date 2020/11/18 17:02
+     */
+    @ApiOperation(value = "获取酒店列表")
+    @RequestMapping(value = "hotel/list", method = RequestMethod.POST)
+    public List<HotelVo> getHotelList(HotelDto hotelDto) {
+        return orderService.getHotelList(hotelDto);
     }
 
     /**
@@ -68,13 +95,16 @@ public class OrderController {
      *
      * @param request
      * @param response
-     * @param orderInfo
-     * @throws UnsupportedEncodingException
+     * @param orderInfoDto
+     * @return void
+     * @author zouhao
+     * @date 2020/11/18 11:03
      */
     @ApiOperation(value = "导出订单信息")
     @RequestMapping(value = "export", method = RequestMethod.GET)
-    public void exportOrderListInfo(HttpServletRequest request, HttpServletResponse response, OrderInfo orderInfo) throws UnsupportedEncodingException {
-        List<OrderInfo> orderInfoList = orderService.orderInfoListExcel(orderInfo);
+
+    public void exportOrderListInfo(HttpServletRequest request, HttpServletResponse response, OrderInfoDto orderInfoDto) throws UnsupportedEncodingException {
+        List<OrderInfoVo> orderInfoList = orderService.orderInfoListExcel(orderInfoDto);
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/x-download");
@@ -150,8 +180,7 @@ public class OrderController {
             out.close();
             wb.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new CustomException("导出失败");
         }
 
     }
@@ -160,7 +189,9 @@ public class OrderController {
      * 批量上传订单信息
      *
      * @param file
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:04
      */
     @ApiOperation(value = "批量上传订单信息")
     @RequestMapping(value = "upload", method = RequestMethod.POST)
@@ -177,7 +208,9 @@ public class OrderController {
      * 根据订单id获取订单详情
      *
      * @param id
-     * @return
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:04
      */
     @ApiOperation(value = "获取订单详情")
     @RequestMapping(value = "detail", method = RequestMethod.GET)
@@ -188,25 +221,29 @@ public class OrderController {
     /**
      * 根据订单id修改订单信息
      *
-     * @param orderInfo
-     * @return
+     * @param orderInfoDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:04
      */
     @ApiOperation(value = "更新订单信息")
-    @RequestMapping(value = "update", method = RequestMethod.POST)
-    public JsonResult updateOrder(OrderInfo orderInfo) {
-        return orderService.updateOrder(orderInfo);
+    @RequestMapping(value = "edit", method = RequestMethod.POST)
+    public JsonResult updateOrder(OrderInfoDto orderInfoDto) {
+        return orderService.updateOrder(orderInfoDto);
     }
 
     /**
      * 根据订单id集合，批量转移订单
      *
-     * @param orderInfo
-     * @return
+     * @param orderInfoDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:04
      */
     @ApiOperation(value = "批量转移订单信息")
     @RequestMapping(value = "mass/transfer", method = RequestMethod.POST)
-    public JsonResult massTransfer(OrderInfo orderInfo) {
-        return orderService.massTransfer(orderInfo);
+    public JsonResult massTransfer(OrderInfoDto orderInfoDto) {
+        return orderService.massTransfer(orderInfoDto);
     }
 
 

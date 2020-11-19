@@ -1,6 +1,6 @@
 package com.yitu.hotel.mapper;
 
-import com.yitu.hotel.model.entity.Config;
+import com.yitu.hotel.entity.common.Config;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

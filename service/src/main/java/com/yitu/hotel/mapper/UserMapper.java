@@ -1,8 +1,12 @@
 package com.yitu.hotel.mapper;
 
-import com.yitu.hotel.model.entity.User;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yitu.hotel.dto.user.UserDto;
+import com.yitu.hotel.entity.user.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.yitu.hotel.vo.user.UserVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,4 +18,12 @@ import org.apache.ibatis.annotations.Mapper;
  */
 public interface UserMapper extends BaseMapper<User> {
 
+    /***
+     * 查询用户信息列表
+     * @param userDto
+     * @return java.util.List<com.yitu.hotel.entity.user.User>
+     * @author zouhao
+     * @date 2020/11/18 14:06
+     */
+    List<UserVo> getList(UserDto userDto);
 }
