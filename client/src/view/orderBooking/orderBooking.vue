@@ -562,13 +562,15 @@
                 let data = {
                     district: this.district,
                     street: this.street,
-                    status: this.status,
                     portType: this.portType,
                     hotelType: this.hotelType,
                     hotelName: this.hotelName,
                     checkinDate: (this.checkinDate == null) || (this.checkinDate == '') ? null : this.$moment(this.checkinDate).format('YYYY-MM-DD'),
                     remark: this.remark,
                     oriRemark: this.oriRemark
+                }
+                if (this.status != null) {
+                    data.status = this.status;
                 }
                 if (pageNum != null && pageSize != null) {
                     data.pageNum = pageNum;
@@ -591,7 +593,7 @@
                             this.tableData[i].sex = '女'
                         }
                         let status = this.tableData[i].status;
-                        if (status == '0') {
+                        if (status == 0) {
                             this.tableData[i].statusForList = '预订待审核'
                         } else if (status == '1') {
                             this.tableData[i].statusForList = '审核未通过'
@@ -625,7 +627,7 @@
             //打开订单修改弹框
             open(row) {
                 this.id = row.id;
-                this.$http.post('http://127.0.0.1:8888/hotel/list', null, {emulateJSON: true}).then((res) => {
+                this.$http.post('http://127.0.0.1:8888/order/hotel/list', null, {emulateJSON: true}).then((res) => {
                     this.hotelList = res.body.data;
                 })
                 this.orderId = row.id;

@@ -384,24 +384,10 @@
                 <td>
                     房源：
                     <el-select v-model="areaTypeUpdate">
-                        <el-option label="深圳房源" value="1"></el-option>
-                        <el-option label="珠海房源" value="2"></el-option>
-                        <el-option label="其他城市" value="3"></el-option>
+                        <el-option label="深圳房源" value=1></el-option>
+                        <el-option label="珠海房源" value=2></el-option>
+                        <el-option label="其他城市" value=3></el-option>
                     </el-select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    酒店登陆账号：
-                    <el-input v-model="hotelUsernameUpdate"></el-input>
-                </td>
-                <td>
-                    酒店登陆密码：
-                    <el-input v-model="hotelPasswordUpdate" show-password></el-input>
-                </td>
-                <td>
-                    确认酒店登陆密码：
-                    <el-input v-model="confirmHotelPasswordUpdate" show-password></el-input>
                 </td>
             </tr>
         </table>
@@ -618,10 +604,14 @@
                 let data = {
                     district: this.district,
                     street: this.street,
-                    deleted: this.deleted,
-                    notshow: this.notshow,
                     hotelTypes: this.hotelTypes,
                     hotelName: this.hotelName,
+                }
+                if (this.deleted != null) {
+                    data.deleted = this.deleted;
+                }
+                if (this.notshow != null) {
+                    data.notshow = this.notshow
                 }
                 if (pageNum != null && pageSize != null) {
                     data.pageNum = pageNum;
@@ -782,7 +772,6 @@
                     if (!reg.test(this.contractMobileAdd)) {
                         this.$message.error("电话号码格式不正确");
                         return;
-                        ;
                     }
                 }
                 if (this.hotelTypeAdd == null || this.hotelTypeAdd == '') {
@@ -927,7 +916,6 @@
                     if (!reg.test(this.contractMobileUpdate)) {
                         this.$message.error("电话号码格式不正确");
                         return;
-                        ;
                     }
                 }
                 if (this.hotelTypeUpdate == null || this.hotelTypeUpdate == '') {
@@ -953,26 +941,6 @@
                     this.$message.error("请选择是否展示");
                     return;
                 }
-                if (this.hotelUsernameUpdate == null || this.hotelUsernameUpdate == '') {
-                    this.$message.error("请输入酒店登录账号");
-                    return;
-                }
-                if (this.hotelPasswordUpdate == null || this.hotelPasswordUpdate == '') {
-                    this.$message.error("请输入酒店登录密码");
-                    return;
-                }
-                if (this.hotelPasswordUpdate.length < 8) {
-                    this.$message.error("酒店登录密码不应少于8位");
-                    return;
-                }
-                if (this.confirmHotelPasswordUpdate == null || this.confirmHotelPasswordUpdate == '') {
-                    this.$message.error("请再次输入酒店登录密码")
-                    return;
-                }
-                if (this.confirmHotelPasswordUpdate != this.hotelPasswordUpdate) {
-                    this.$message.error("两次输入密码不一致")
-                    return;
-                }
                 if (this.isReportUpdate == null || this.isReportUpdate == '') {
                     this.$message.error("请选择是否上报");
                     return;
@@ -993,8 +961,6 @@
                 data.contractUser = this.contractUserUpdate;
                 data.contractMobile = this.contractMobileUpdate;
                 data.address = this.addressUpdate;
-                data.hotelUsername = this.hotelUsernameUpdate;
-                data.hotelPassword = this.hotelPasswordUpdate;
                 data.remark = this.remarkUpdate;
                 data.deleted = this.deletedUpdate,
                     data.notshow = this.notshowUpdate,
