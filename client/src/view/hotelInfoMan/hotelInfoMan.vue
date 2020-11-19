@@ -363,15 +363,15 @@
                 <td>
                     <span>是否删除：</span>
                     <el-select v-model="deletedUpdate">
-                        <el-option value='true' label="未删除"></el-option>
-                        <el-option value="false" label="已删除"></el-option>
+                        <el-option value='0' label="未删除"></el-option>
+                        <el-option value="1" label="已删除"></el-option>
                     </el-select>
                 </td>
                 <td>
                     是否展示：
                     <el-select v-model="notshowUpdate">
-                        <el-option label="展示" value="true"></el-option>
-                        <el-option label="不展示" value="false"></el-option>
+                        <el-option label="展示" value="0"></el-option>
+                        <el-option label="不展示" value="1"></el-option>
                     </el-select>
                 </td>
                 <td>
@@ -630,7 +630,7 @@
                     data.pageNum = this.currentPage;
                     data.pageSize = this.pageSize;
                 }
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', data, {emulateJSON: true}).then(function (res) {
+                this.$http.post('http://127.0.0.1:8888/hotel/list', data, {emulateJSON: true}).then(function (res) {
                     this.tableData = res.body.data.list;
                     this.totalCount = res.body.data.total
                     this.getHotelTypesList();
@@ -665,6 +665,16 @@
             },
             //打开修改酒店弹框
             openUpdate(row) {
+                if (row.deleted == true) {
+                    row.deleted = '1'
+                } else {
+                    row.deleted = '0'
+                }
+                if (row.notshow == true) {
+                    row.notshow = '1'
+                } else {
+                    row.notshow = '0'
+                }
                 this.hotelTypeUpdateIdList = '';
                 this.hotelTypesListUpate = null;
                 this.updateId = row.id;
@@ -703,6 +713,7 @@
                     this.remarkUpdate = row.remark,
                     this.hotelUsernameUpdate = row.hotelUsername,
                     this.hotelPasswordUpdate = row.hotelPassword,
+                    this.confirmHotelPasswordUpdate = row.hotelPassword,
                     this.controlDateUpdate = row.controlDate,
                     this.reserveDateUpdate = row.reserveDate,
                     this.deletedUpdate = row.deleted.toString(),
@@ -738,7 +749,7 @@
                         this.$message.success("分配成功")
                         this.hotelInfoList();
                     } else {
-                        this.$message.error("分配失败")
+                        this.$message.error(res.body.msg)
                     }
                 })
                 this.dialogVisibleAOH = false;
@@ -856,7 +867,7 @@
                 if (this.reserveDateAdd != null && this.reserveDateAdd != '') {
                     data.reserveDate = this.$moment(this.reserveDateAdd).format('YYYY-MM-DD')
                 }
-                this.$http.post('http://127.0.0.1:8888/hotel/info/add', data, {emulateJSON: true}).then(function (res) {
+                this.$http.post('http://127.0.0.1:8888/hotel/add', data, {emulateJSON: true}).then(function (res) {
                     if (res.body.status == 200) {
                         this.$message.success("新增成功")
                         this.dialogVisibleAdd = false;
@@ -989,7 +1000,7 @@
                     data.notshow = this.notshowUpdate,
                     data.isReport = this.isReportUpdate,
                     data.areaType = this.areaTypeUpdate,
-                    this.$http.post('http://127.0.0.1:8888/hotel/info/update', data, {emulateJSON: true}).then(function (res) {
+                    this.$http.post('http://127.0.0.1:8888/hotel/edit', data, {emulateJSON: true}).then(function (res) {
                         if (res.body.status == 200) {
                             this.$message.success("修改成功")
                             this.dialogVisibleUpdate = false;
@@ -1029,7 +1040,7 @@
             },
             //删除酒店
             handleDelete(id) {
-                this.$http.get('http://127.0.0.1:8888/hotel/info/delete', {params: {id: id}}).then(function (res) {
+                this.$http.get('http://127.0.0.1:8888/hotel/delete', {params: {id: id}}).then(function (res) {
                     if (res.status == 200) {
                         this.$message.success("删除成功")
                     } else {

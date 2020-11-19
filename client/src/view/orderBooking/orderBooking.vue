@@ -549,11 +549,11 @@
             },
             getHotelMtList() {
                 this.hotelMt = null;
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', {
+                this.$http.post('http://127.0.0.1:8888/order/hotel/list', {
                     district: this.districtMt,
                     street: this.streetMt
                 }, {emulateJSON: true}).then((res => {
-                    this.hotelInfoListMt = res.body.data;
+                    this.hotelInfoListMt = res.body;
                 }))
             },
             //获取订单列表
@@ -625,7 +625,7 @@
             //打开订单修改弹框
             open(row) {
                 this.id = row.id;
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', null, {emulateJSON: true}).then((res) => {
+                this.$http.post('http://127.0.0.1:8888/hotel/list', null, {emulateJSON: true}).then((res) => {
                     this.hotelList = res.body.data;
                 })
                 this.orderId = row.id;
@@ -676,7 +676,7 @@
                     this.$message.error("请选择来源");
                     return;
                 }
-                this.$http.post('http://127.0.0.1:8888/order/update', {
+                this.$http.post('http://127.0.0.1:8888/order/edit', {
                         id: this.id,
                         hotelId: this.hotelIdUpt,
                         houseType: this.houseTypeUpt,
@@ -691,14 +691,14 @@
                     {
                         emulateJSON: true
                     }).then((res) => {
-                    if (res.status == 200) {
-                        this.$message.success("修改成功")
-                        this.orderInfoList();
+                    if (res.body.status != 200) {
+                        this.$message.error(res.body.msg)
                     } else {
-                        this.$message.error("修改失败")
+                        this.orderInfoList();
+                        this.$message.success("修改成功")
+                        this.dialogVisibleUp = false;
                     }
                 })
-                this.dialogVisibleUp = false;
             },
             //获取订单详情（用户信息和酒店信息）
             orderDetail(row) {
@@ -714,6 +714,8 @@
                         this.userInfo.certType = '护照';
                     } else if (certType == '4') {
                         this.userInfo.certType = '回乡证';
+                    } else {
+                        this.userInfo.certType = '';
                     }
                     let checkStatus = this.userInfo.checkStatus;
                     if (checkStatus == '0') {
@@ -792,15 +794,9 @@
                 jsonStr = jsonStr + ""
                 this.$http.post('http://127.0.0.1:8888/order/deleteList', {'idList': jsonStr}, {emulateJSON: true}).then((res) => {
                     if (res.body.status != 200) {
-                        this.$notify({
-                            title: '删除失败',
-                            type: 'failed'
-                        });
+                        this.$message.error(res.body.msg);
                     } else {
-                        this.$notify({
-                            title: '删除成功',
-                            type: 'success'
-                        });
+                        this.$message.success("删除成功");
                         this.orderInfoList();
                     }
                 })
@@ -833,10 +829,10 @@
                     idList: jsonStr,
                     hotelId: this.hotelMt
                 }, {emulateJSON: true}).then((res) => {
-                    if (res.status == 200) {
+                    if (res.body.status == 200) {
                         this.$message.success("批量转移成功")
                     } else {
-                        this.$message.error("批量转移失败")
+                        this.$message.error(res.body.msg)
                     }
                     this.districtMt = null;
                     this.streetMt = null;
@@ -891,11 +887,11 @@
             handleExceed(files, fileList) {
                 this.$message.warning(`当前限制选择2个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
             },
-            handleAvatarSuccess(response) {
-                if (response.status == 200) {
+            handleAvatarSuccess(res) {
+                if (res.status == 200) {
                     this.$message.success("上传成功")
                 } else {
-                    this.$message.error("上传失败")
+                    this.$message.error(res.msg)
                 }
                 this.fileList = [];
             }

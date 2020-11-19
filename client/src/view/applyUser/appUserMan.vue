@@ -212,7 +212,7 @@
                                 </tr>
                                 <tr>
                                     <td><label>审核时间：</label>
-                                        <span> {{userInfo.checkDate.slice(0,10)}} </span></td>
+                                        <span> {{userInfo.checkDate}} </span></td>
                                     <td><label>审核人：</label>
                                         <span>{{userInfo.checkUser}}</span></td>
                                 </tr>
@@ -232,7 +232,7 @@
                                 </tr>
                                 <tr>
                                     <td><label>审核时间：</label>
-                                        <span> {{userInfo.sqCheckDate.slice(0,10)}} </span></td>
+                                        <span> {{userInfo.sqCheckDate}} </span></td>
                                     <td><label>审核人：</label>
                                         <span>{{userInfo.sqCheckUser}}</span></td>
                                 </tr>
@@ -252,7 +252,7 @@
                                 </tr>
                                 <tr>
                                     <td><label>审核时间：</label>
-                                        <span>{{userInfo.hsRgCheckDate.slice(0,10)}} </span></td>
+                                        <span>{{userInfo.hsRgCheckDate}} </span></td>
                                     <td><label>审核人：</label>
                                         <span>{{userInfo.hsRgCheckUser}}</span></td>
                                 </tr>
@@ -355,7 +355,7 @@
                     data.pageNum = this.currentPage;
                     data.pageSize = this.pageSize;
                 }
-                this.$http.post('http://127.0.0.1:8888/userInfo/user/list', data, {emulateJSON: true}).then(function (res) {
+                this.$http.post('http://127.0.0.1:8888/userInfo/list', data, {emulateJSON: true}).then(function (res) {
                     this.tableData = res.body.data.list;
                     this.totalCount = res.body.data.total
                     for (var i = 0; i < this.tableData.length; i++) {
@@ -474,7 +474,7 @@
             //获取用户详细信息
             userInfoDetail(row) {
                 this.dialogVisible = true;
-                this.$http.get('http://127.0.0.1:8888/userInfo/user/info', {params: {userId: row.id}}).then(function (res) {
+                this.$http.get('http://127.0.0.1:8888/userInfo/detail', {params: {userId: row.id}}).then(function (res) {
                     this.userInfo = res.body.data;
                     let certType = this.userInfo.certType;
                     if (certType == '1') {
@@ -485,6 +485,8 @@
                         this.userInfo.certType = '护照';
                     } else if (certType == '4') {
                         this.userInfo.certType = '回乡证';
+                    } else {
+                        this.userInfo.certType = '';
                     }
                     let checkStatus = this.userInfo.checkStatus;
                     if (checkStatus == '0') {
@@ -509,6 +511,18 @@
                         this.userInfo.sqCheckStatus = '审核通过'
                     } else if (sqCheckStatus == '2') {
                         this.userInfo.sqCheckStatus = '审核不通过'
+                    }
+                    let checkDate = this.userInfo.checkDate;
+                    let hsRgCheckDate = this.userInfo.hsRgCheckDate;
+                    let sqCheckDate = this.userInfo.sqCheckDate;
+                    if (checkDate != null || checkDate != '') {
+                        this.userInfo.checkDate = checkDate.slice(0, 10);
+                    }
+                    if (hsRgCheckDate != null || hsRgCheckDate != '') {
+                        this.userInfo.hsRgCheckDate = hsRgCheckDate.slice(0, 10);
+                    }
+                    if (sqCheckDate != null || sqCheckDate != '') {
+                        this.userInfo.sqCheckDate = sqCheckDate.slice(0, 10);
                     }
                 })
             },
@@ -541,34 +555,22 @@
                     passwd: this.newPassWord
                 }, {emulateJSON: true}).then((res) => {
                     if (res.body.status != 200) {
-                        this.$notify({
-                            title: '修改失败',
-                            type: 'failed'
-                        });
+                        this.$message.error(res.body.msg)
                     } else {
-                        this.$notify({
-                            title: '修改成功',
-                            type: 'success'
-                        });
+                        this.$message.success("修改成功")
+                        this.dialogVisibleRP = false;
                     }
                     this.newPassWord = null;
                     this.confirmTheNewPassword = null;
-                    this.dialogVisibleRP = false;
                 })
             },
             //删除用户
             deleteUser(userId) {
                 this.$http.delete('http://127.0.0.1:8888/userInfo/delete', {params: {'userId': userId}}).then((res) => {
                     if (res.body.status != 200) {
-                        this.$notify({
-                            title: '删除失败',
-                            type: 'failed'
-                        });
+                        this.$message.error(res.body.msg)
                     } else {
-                        this.$notify({
-                            title: '删除成功',
-                            type: 'success'
-                        });
+                        this.$message.success("删除成功")
                         this.appUserList();
                     }
                 })
