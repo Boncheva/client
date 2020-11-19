@@ -18,7 +18,7 @@ public class HotelDto extends PageDto {
     /**
      * id
      */
-    private String id;
+    private long id;
 
     /**
      * 酒店名称
@@ -74,12 +74,12 @@ public class HotelDto extends PageDto {
     /**
      * 是否删除: 0-未删除、1-已删除
      */
-    private String deleted;
+    private Integer deleted;
 
     /**
      * 是否展示 0-展示、1-不展示
      */
-    private String notshow;
+    private Integer notshow;
 
     /**
      * 酒店登陆账号

@@ -3,9 +3,11 @@ package com.yitu.hotel.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import com.yitu.hotel.dto.hotel.HotelDto;
 import com.yitu.hotel.dto.order.OrderInfoDto;
+import com.yitu.hotel.enums.fromTypeCode;
+import com.yitu.hotel.enums.houseTypeCode;
+import com.yitu.hotel.enums.orderStatusCode;
 import com.yitu.hotel.exception.CustomException;
 import com.yitu.hotel.mapper.HotelMapper;
 import com.yitu.hotel.mapper.OrderInfoMapper;
@@ -31,8 +33,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
 
@@ -197,7 +201,7 @@ public class OrderServiceImpl implements OrderService {
             orderInfo.setUserId(userId);
             orderInfo.setUserType(userType);
             orderInfo.setPrice(price);
-            orderInfo.setCheckinDate(checkinDate);
+//            orderInfo.setCheckinDate(checkinDate);
             orderInfo.setAddDate(addDate);
             orderInfo.setRealCheckinDate(realCheckinDate);
             orderInfo.setCancelDate(cancelDate);
@@ -259,44 +263,57 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public JsonResult updateOrder(OrderInfoDto orderInfoDto) {
-        orderInfoDto.setId(null);
-        if (StringUtils.isBlank(orderInfoDto.getId())) {
+        LocalDate checkinDate = null;
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (orderInfoDto.getId() == 0) {
             throw new CustomException("参数有误");
         }
-        if (StringUtils.isBlank(orderInfoDto.getHouseType())) {
-            throw new CustomException("房间类型不能为空");
+        String houseType = houseTypeCode.getType(orderInfoDto.getHouseType());
+        if (houseType == null) {
+            throw new CustomException("房间类型不存在");
         }
         if (StringUtils.isBlank(orderInfoDto.getCheckinDate())) {
             throw new CustomException("入住时间不能为空");
+        } else {
+            try {
+                checkinDate = LocalDate.parse(orderInfoDto.getCheckinDate(), dateTimeFormatter);
+            } catch (DateTimeParseException ex) {
+                throw new CustomException("入住时间格式有误");
+            }
         }
         if (StringUtils.isBlank(orderInfoDto.getPrice())) {
             throw new CustomException("房间价格不能为空");
+        } else {
+            try {
+                Integer.parseInt(orderInfoDto.getPrice());
+            } catch (NumberFormatException ex) {
+                throw new CustomException("房间价格不是数字");
+            }
         }
-        if (StringUtils.isBlank(orderInfoDto.getStatus())) {
-            throw new CustomException("状态不能为空");
-        }
-        if (StringUtils.isBlank(orderInfoDto.getDeleted())) {
-            throw new CustomException("是否删除不能为空");
+        String status = orderStatusCode.getStatus(orderInfoDto.getStatus());
+        if (status == null) {
+            throw new CustomException("状态类型不存在");
         }
         if (StringUtils.isBlank(orderInfoDto.getRoomNum())) {
             throw new CustomException("入住房号不能为空");
         }
-        if (StringUtils.isBlank(orderInfoDto.getFromType())) {
-            throw new CustomException("来源不能为空");
+        String type = fromTypeCode.getFromType(orderInfoDto.getFromType());
+        if (type == null) {
+            throw new CustomException("来源不存在");
         }
         OrderInfo orderInfo = orderInfoMapper.selectById(orderInfoDto.getId());
-        if (orderInfo == null) {
+        if (orderInfo == null || orderInfo.getDeleted() == 1) {
             throw new CustomException("该订单不存在");
         }
         orderInfo = new OrderInfo();
-        orderInfo.setId(Long.valueOf(orderInfoDto.getId()));
-        orderInfo.setHouseType(Integer.parseInt(orderInfoDto.getHouseType()));
-        orderInfo.setCheckinDate(orderInfoDto.getCheckinDate());
+        orderInfo.setId(orderInfoDto.getId());
+        orderInfo.setHouseType(orderInfoDto.getHouseType());
+        orderInfo.setCheckinDate(checkinDate);
         orderInfo.setPrice(orderInfoDto.getPrice());
-        orderInfo.setStatus(Integer.valueOf(orderInfoDto.getStatus()));
-        orderInfo.setDeleted(Integer.valueOf(orderInfoDto.getDeleted()));
+        orderInfo.setStatus(orderInfoDto.getStatus());
+        orderInfo.setDeleted(orderInfoDto.getDeleted());
         orderInfo.setRoomNum(orderInfoDto.getRoomNum());
-        orderInfo.setFromType(Integer.valueOf(orderInfoDto.getFromType()));
+        orderInfo.setFromType(orderInfoDto.getFromType());
         orderInfo.setRemark(orderInfoDto.getRemark());
         int i = orderInfoMapper.updateById(orderInfo);
         if (i <= 0) {
@@ -316,9 +333,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public JsonResult massTransfer(OrderInfoDto orderInfoDto) {
         if (orderInfoDto.getIdList() != null && orderInfoDto.getIdList().size() > 0) {
-            if (StringUtils.isBlank(orderInfoDto.getHotelId())) {
-                throw new CustomException("酒店不能为空");
-            }
             QueryWrapper qw = new QueryWrapper();
             qw.in("id", orderInfoDto.getIdList());
             OrderInfo orderInfo = new OrderInfo();

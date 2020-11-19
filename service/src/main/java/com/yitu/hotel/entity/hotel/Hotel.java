@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -257,13 +258,13 @@ public class Hotel implements Serializable {
      * 管控时间
      */
     @TableField("control_date")
-    private String controlDate;
+    private LocalDate controlDate;
 
     /**
      * 可预约日期
      */
     @TableField("reserve_date")
-    private String reserveDate;
+    private LocalDate reserveDate;
 
     /**
      * 区政府是否上报

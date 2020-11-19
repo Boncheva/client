@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -64,15 +65,7 @@ public class OrderInfo implements Serializable {
      * 入住日期
      */
     @TableField("checkin_date")
-    private String checkinDate;
-
-    public String getCheckinDate() {
-        return checkinDate;
-    }
-
-    public void setCheckinDate(String checkinDate) {
-        this.checkinDate = checkinDate;
-    }
+    private LocalDate checkinDate;
 
     /**
      * 状态: 0-预订待审核、1-审核未通过、2-已预订、3-入住、4-爽约、5-退房、9-取消
@@ -90,7 +83,6 @@ public class OrderInfo implements Serializable {
      * 实际入住时间
      */
     @TableField("real_checkin_date")
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime realCheckinDate;
 
     /**

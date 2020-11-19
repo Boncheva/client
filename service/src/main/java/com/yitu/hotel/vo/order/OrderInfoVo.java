@@ -3,6 +3,7 @@ package com.yitu.hotel.vo.order;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -54,15 +55,7 @@ public class OrderInfoVo {
      * 入住日期
      */
 
-    private String checkinDate;
-
-    public String getCheckinDate() {
-        return checkinDate;
-    }
-
-    public void setCheckinDate(String checkinDate) {
-        this.checkinDate = checkinDate;
-    }
+    private LocalDate checkinDate;
 
     /**
      * 状态: 0-预订待审核、1-审核未通过、2-已预订、3-入住、4-爽约、5-退房、9-取消
@@ -79,7 +72,7 @@ public class OrderInfoVo {
     /**
      * 实际入住时间
      */
-    private String realCheckinDate;
+    private LocalDate realCheckinDate;
 
     /**
      * 取消时间（用户未入住前，主动退房）

@@ -2,7 +2,7 @@ server:
   port: 8888
 spring:
   datasource:
-    url: jdbc:mysql://192.9.102.129:3306/isolate_hotel_system_test?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://192.9.102.129:3306/isolate_hotel_system_test?characterEncoding=utf-8&useSSL=false&timezone=Asia/Shanghai
     username: isolate
     password: qsR$FlckDC
     driver-class-name: com.mysql.cj.jdbc.Driver

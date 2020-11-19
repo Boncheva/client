@@ -4,6 +4,7 @@ import com.yitu.hotel.dto.common.PageDto;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -19,19 +20,19 @@ public class OrderInfoDto extends PageDto {
     /**
      * 订单id
      */
-    private String id;
+    private long id;
 
     /**
      * 酒店id
      */
 
-    private String hotelId;
+    private long hotelId;
 
     /**
      * 房型：1-普通房间、2-货车司机专用、3-其他
      */
 
-    private String houseType;
+    private int houseType;
 
     /**
      * 用户id
@@ -61,7 +62,7 @@ public class OrderInfoDto extends PageDto {
      * 状态: 0-预订待审核、1-审核未通过、2-已预订、3-入住、4-爽约、5-退房、9-取消
      */
 
-    private String status;
+    private int status;
 
     /**
      * 提交时间
@@ -90,7 +91,7 @@ public class OrderInfoDto extends PageDto {
      * 是否删除：0-未删除、1-已删除
      */
 
-    private String deleted;
+    private int deleted;
 
     /**
      * 操作人
@@ -144,7 +145,7 @@ public class OrderInfoDto extends PageDto {
      * 来源：0用户、1酒店、2导入
      */
 
-    private String fromType;
+    private int fromType;
 
     /**
      * 导入原始备注

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 public class generater {
     static String packageName = "com.yitu.hotel"; // 当前包名
-    static String author = "MyBatisPlusGenerater"; // 作者
+    static String author = "zouhao"; // 作者
     static String sqlUrl = "mysql://192.9.102.129:3306/"; // 数据库类型及地址
     static String sqlDb = "isolate_hotel_system_test"; // 数据库名
     static String sqlUser = "isolate";
@@ -44,7 +44,6 @@ public class generater {
 
         // 配置模板
         TemplateConfig templateConfig = new TemplateConfig();
-//        templateConfig.setXml(null); // 不生成MapperXML
         mpg.setTemplate(templateConfig);
 
         // 策略配置
