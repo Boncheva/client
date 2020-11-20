@@ -49,7 +49,7 @@
                 <input type="text" v-model="hotelName" placeholder="搜索酒店名称" class="layui-input">
             </div>
 
-            <button class="layui-btn layui-btn-normal layui-btn-sm" @click="hotelInfoList()">搜索</button>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" @click="hotelInfoList(null,1)">搜索</button>
             <button class="layui-btn layui-btn-normal layui-btn-sm" @click="reset">重置</button>
             <button class="layui-btn layui-btn-normal layui-btn-sm" @click="openAdd">新增</button>
             <div class="supervision-list-table">
@@ -363,15 +363,15 @@
                 <td>
                     <span>是否删除：</span>
                     <el-select v-model="deletedUpdate">
-                        <el-option value='true' label="未删除"></el-option>
-                        <el-option value="false" label="已删除"></el-option>
+                        <el-option value='0' label="未删除"></el-option>
+                        <el-option value="1" label="已删除"></el-option>
                     </el-select>
                 </td>
                 <td>
                     是否展示：
                     <el-select v-model="notshowUpdate">
-                        <el-option label="展示" value="true"></el-option>
-                        <el-option label="不展示" value="false"></el-option>
+                        <el-option label="展示" value="0"></el-option>
+                        <el-option label="不展示" value="1"></el-option>
                     </el-select>
                 </td>
                 <td>
@@ -384,24 +384,10 @@
                 <td>
                     房源：
                     <el-select v-model="areaTypeUpdate">
-                        <el-option label="深圳房源" value="1"></el-option>
-                        <el-option label="珠海房源" value="2"></el-option>
-                        <el-option label="其他城市" value="3"></el-option>
+                        <el-option label="深圳房源" value=1></el-option>
+                        <el-option label="珠海房源" value=2></el-option>
+                        <el-option label="其他城市" value=3></el-option>
                     </el-select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    酒店登陆账号：
-                    <el-input v-model="hotelUsernameUpdate"></el-input>
-                </td>
-                <td>
-                    酒店登陆密码：
-                    <el-input v-model="hotelPasswordUpdate" show-password></el-input>
-                </td>
-                <td>
-                    确认酒店登陆密码：
-                    <el-input v-model="confirmHotelPasswordUpdate" show-password></el-input>
                 </td>
             </tr>
         </table>
@@ -618,19 +604,26 @@
                 let data = {
                     district: this.district,
                     street: this.street,
-                    deleted: this.deleted,
-                    notshow: this.notshow,
                     hotelTypes: this.hotelTypes,
                     hotelName: this.hotelName,
                 }
-                if (pageNum != null && pageSize != null) {
+                if (this.deleted != null) {
+                    data.deleted = this.deleted;
+                }
+                if (this.notshow != null) {
+                    data.notshow = this.notshow
+                }
+                if (pageNum != null) {
                     data.pageNum = pageNum;
-                    data.pageSize = pageSize;
                 } else {
                     data.pageNum = this.currentPage;
+                }
+                if (pageSize != null) {
+                    data.pageSize = pageSize;
+                } else {
                     data.pageSize = this.pageSize;
                 }
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', data, {emulateJSON: true}).then(function (res) {
+                this.$http.post('http://127.0.0.1:8888/hotel/list', data, {emulateJSON: true}).then(function (res) {
                     this.tableData = res.body.data.list;
                     this.totalCount = res.body.data.total
                     this.getHotelTypesList();
@@ -665,6 +658,16 @@
             },
             //打开修改酒店弹框
             openUpdate(row) {
+                if (row.deleted == true) {
+                    row.deleted = '1'
+                } else {
+                    row.deleted = '0'
+                }
+                if (row.notshow == true) {
+                    row.notshow = '1'
+                } else {
+                    row.notshow = '0'
+                }
                 this.hotelTypeUpdateIdList = '';
                 this.hotelTypesListUpate = null;
                 this.updateId = row.id;
@@ -703,6 +706,7 @@
                     this.remarkUpdate = row.remark,
                     this.hotelUsernameUpdate = row.hotelUsername,
                     this.hotelPasswordUpdate = row.hotelPassword,
+                    this.confirmHotelPasswordUpdate = row.hotelPassword,
                     this.controlDateUpdate = row.controlDate,
                     this.reserveDateUpdate = row.reserveDate,
                     this.deletedUpdate = row.deleted.toString(),
@@ -738,7 +742,7 @@
                         this.$message.success("分配成功")
                         this.hotelInfoList();
                     } else {
-                        this.$message.error("分配失败")
+                        this.$message.error(res.body.msg)
                     }
                 })
                 this.dialogVisibleAOH = false;
@@ -771,7 +775,6 @@
                     if (!reg.test(this.contractMobileAdd)) {
                         this.$message.error("电话号码格式不正确");
                         return;
-                        ;
                     }
                 }
                 if (this.hotelTypeAdd == null || this.hotelTypeAdd == '') {
@@ -856,7 +859,7 @@
                 if (this.reserveDateAdd != null && this.reserveDateAdd != '') {
                     data.reserveDate = this.$moment(this.reserveDateAdd).format('YYYY-MM-DD')
                 }
-                this.$http.post('http://127.0.0.1:8888/hotel/info/add', data, {emulateJSON: true}).then(function (res) {
+                this.$http.post('http://127.0.0.1:8888/hotel/add', data, {emulateJSON: true}).then(function (res) {
                     if (res.body.status == 200) {
                         this.$message.success("新增成功")
                         this.dialogVisibleAdd = false;
@@ -916,7 +919,6 @@
                     if (!reg.test(this.contractMobileUpdate)) {
                         this.$message.error("电话号码格式不正确");
                         return;
-                        ;
                     }
                 }
                 if (this.hotelTypeUpdate == null || this.hotelTypeUpdate == '') {
@@ -942,26 +944,6 @@
                     this.$message.error("请选择是否展示");
                     return;
                 }
-                if (this.hotelUsernameUpdate == null || this.hotelUsernameUpdate == '') {
-                    this.$message.error("请输入酒店登录账号");
-                    return;
-                }
-                if (this.hotelPasswordUpdate == null || this.hotelPasswordUpdate == '') {
-                    this.$message.error("请输入酒店登录密码");
-                    return;
-                }
-                if (this.hotelPasswordUpdate.length < 8) {
-                    this.$message.error("酒店登录密码不应少于8位");
-                    return;
-                }
-                if (this.confirmHotelPasswordUpdate == null || this.confirmHotelPasswordUpdate == '') {
-                    this.$message.error("请再次输入酒店登录密码")
-                    return;
-                }
-                if (this.confirmHotelPasswordUpdate != this.hotelPasswordUpdate) {
-                    this.$message.error("两次输入密码不一致")
-                    return;
-                }
                 if (this.isReportUpdate == null || this.isReportUpdate == '') {
                     this.$message.error("请选择是否上报");
                     return;
@@ -982,14 +964,12 @@
                 data.contractUser = this.contractUserUpdate;
                 data.contractMobile = this.contractMobileUpdate;
                 data.address = this.addressUpdate;
-                data.hotelUsername = this.hotelUsernameUpdate;
-                data.hotelPassword = this.hotelPasswordUpdate;
                 data.remark = this.remarkUpdate;
                 data.deleted = this.deletedUpdate,
                     data.notshow = this.notshowUpdate,
                     data.isReport = this.isReportUpdate,
                     data.areaType = this.areaTypeUpdate,
-                    this.$http.post('http://127.0.0.1:8888/hotel/info/update', data, {emulateJSON: true}).then(function (res) {
+                    this.$http.post('http://127.0.0.1:8888/hotel/edit', data, {emulateJSON: true}).then(function (res) {
                         if (res.body.status == 200) {
                             this.$message.success("修改成功")
                             this.dialogVisibleUpdate = false;
@@ -1029,7 +1009,7 @@
             },
             //删除酒店
             handleDelete(id) {
-                this.$http.get('http://127.0.0.1:8888/hotel/info/delete', {params: {id: id}}).then(function (res) {
+                this.$http.get('http://127.0.0.1:8888/hotel/delete', {params: {id: id}}).then(function (res) {
                     if (res.status == 200) {
                         this.$message.success("删除成功")
                     } else {

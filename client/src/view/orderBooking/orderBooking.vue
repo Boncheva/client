@@ -67,7 +67,8 @@
                         <el-input v-model="oriRemark" placeholder="搜索原始备注"></el-input>
                     </div>
 
-                    <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="orderInfoList()">搜索</el-button>
+                    <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="orderInfoList(null,1)">搜索
+                    </el-button>
                     <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="reset">重置</el-button>
                     <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="exportOrderInfoList()">导出
                     </el-button>
@@ -209,7 +210,8 @@
                             </td>
                             <td>
                                 <span>入住时间：</span>
-                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间"/>
+                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间"
+                                                value-format="yyyy-MM-dd"/>
                             </td>
                             <td>
                                 <span>价格: </span>
@@ -549,20 +551,18 @@
             },
             getHotelMtList() {
                 this.hotelMt = null;
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', {
+                this.$http.post('http://127.0.0.1:8888/order/hotel/list', {
                     district: this.districtMt,
                     street: this.streetMt
                 }, {emulateJSON: true}).then((res => {
-                    this.hotelInfoListMt = res.body.data;
+                    this.hotelInfoListMt = res.body;
                 }))
             },
             //获取订单列表
             orderInfoList(pageSize, pageNum) {
-                // console.log(this.checkinDate);
                 let data = {
                     district: this.district,
                     street: this.street,
-                    status: this.status,
                     portType: this.portType,
                     hotelType: this.hotelType,
                     hotelName: this.hotelName,
@@ -570,11 +570,17 @@
                     remark: this.remark,
                     oriRemark: this.oriRemark
                 }
-                if (pageNum != null && pageSize != null) {
+                if (this.status != null) {
+                    data.status = this.status;
+                }
+                if (pageNum != null) {
                     data.pageNum = pageNum;
-                    data.pageSize = pageSize;
                 } else {
                     data.pageNum = this.currentPage;
+                }
+                if (pageSize != null) {
+                    data.pageSize = pageSize;
+                } else {
                     data.pageSize = this.pageSize;
                 }
                 this.$http.post('http://127.0.0.1:8888/order/list', data, {emulateJSON: true}).then(function (res) {
@@ -591,7 +597,7 @@
                             this.tableData[i].sex = '女'
                         }
                         let status = this.tableData[i].status;
-                        if (status == '0') {
+                        if (status == 0) {
                             this.tableData[i].statusForList = '预订待审核'
                         } else if (status == '1') {
                             this.tableData[i].statusForList = '审核未通过'
@@ -625,7 +631,7 @@
             //打开订单修改弹框
             open(row) {
                 this.id = row.id;
-                this.$http.post('http://127.0.0.1:8888/hotel/info/list', null, {emulateJSON: true}).then((res) => {
+                this.$http.post('http://127.0.0.1:8888/order/hotel/list', null, {emulateJSON: true}).then((res) => {
                     this.hotelList = res.body.data;
                 })
                 this.orderId = row.id;
@@ -676,11 +682,13 @@
                     this.$message.error("请选择来源");
                     return;
                 }
-                this.$http.post('http://127.0.0.1:8888/order/update', {
+                console.log(this.checkinDateUpt);
+                this.$http.post('http://127.0.0.1:8888/order/edit', {
                         id: this.id,
                         hotelId: this.hotelIdUpt,
                         houseType: this.houseTypeUpt,
-                        checkinDate: (this.checkinDateUpt == null) || (this.checkinDateUpt == '') ? null : this.$moment(this.checkinDateUpt).format('YYYY-MM-DD'),
+                        // checkinDate: (this.checkinDateUpt == null) || (this.checkinDateUpt == '') ? null : this.$moment(this.checkinDateUpt).format('YYYY-MM-DD'),
+                        checkinDate: this.checkinDateUpt,
                         price: this.housePriceUpt,
                         status: this.statusUpt,
                         deleted: this.deletedUpt,
@@ -691,14 +699,14 @@
                     {
                         emulateJSON: true
                     }).then((res) => {
-                    if (res.status == 200) {
-                        this.$message.success("修改成功")
-                        this.orderInfoList();
+                    if (res.body.status != 200) {
+                        this.$message.error(res.body.msg)
                     } else {
-                        this.$message.error("修改失败")
+                        this.orderInfoList();
+                        this.$message.success("修改成功")
+                        this.dialogVisibleUp = false;
                     }
                 })
-                this.dialogVisibleUp = false;
             },
             //获取订单详情（用户信息和酒店信息）
             orderDetail(row) {
@@ -714,6 +722,8 @@
                         this.userInfo.certType = '护照';
                     } else if (certType == '4') {
                         this.userInfo.certType = '回乡证';
+                    } else {
+                        this.userInfo.certType = '';
                     }
                     let checkStatus = this.userInfo.checkStatus;
                     if (checkStatus == '0') {
@@ -792,15 +802,9 @@
                 jsonStr = jsonStr + ""
                 this.$http.post('http://127.0.0.1:8888/order/deleteList', {'idList': jsonStr}, {emulateJSON: true}).then((res) => {
                     if (res.body.status != 200) {
-                        this.$notify({
-                            title: '删除失败',
-                            type: 'failed'
-                        });
+                        this.$message.error(res.body.msg);
                     } else {
-                        this.$notify({
-                            title: '删除成功',
-                            type: 'success'
-                        });
+                        this.$message.success("删除成功");
                         this.orderInfoList();
                     }
                 })
@@ -833,10 +837,10 @@
                     idList: jsonStr,
                     hotelId: this.hotelMt
                 }, {emulateJSON: true}).then((res) => {
-                    if (res.status == 200) {
+                    if (res.body.status == 200) {
                         this.$message.success("批量转移成功")
                     } else {
-                        this.$message.error("批量转移失败")
+                        this.$message.error(res.body.msg)
                     }
                     this.districtMt = null;
                     this.streetMt = null;
@@ -891,11 +895,12 @@
             handleExceed(files, fileList) {
                 this.$message.warning(`当前限制选择2个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
             },
-            handleAvatarSuccess(response) {
-                if (response.status == 200) {
+            handleAvatarSuccess(res) {
+                if (res.status == 200) {
                     this.$message.success("上传成功")
+                    this.orderInfoList(null, 1);
                 } else {
-                    this.$message.error("上传失败")
+                    this.$message.error(res.msg)
                 }
                 this.fileList = [];
             }
