@@ -29,31 +29,31 @@ public class OrderInfo implements Serializable {
      * 订单id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * 酒店id
      */
     @TableField("hotel_id")
-    private Long hotelId;
+    private long hotelId;
 
     /**
      * 房型：1-普通房间、2-货车司机专用、3-其他
      */
     @TableField("house_type")
-    private Integer houseType;
+    private int houseType;
 
     /**
      * 用户id
      */
     @TableField("user_id")
-    private Long userId;
+    private long userId;
 
     /**
      * 用户类型：0香港入境普通市民、1机场国际航班人员、2跨境货车司机、3港口入境船员
      */
     @TableField("user_type")
-    private Integer userType;
+    private int userType;
 
     /**
      * 价格
@@ -71,7 +71,7 @@ public class OrderInfo implements Serializable {
      * 状态: 0-预订待审核、1-审核未通过、2-已预订、3-入住、4-爽约、5-退房、9-取消
      */
     @TableField("status")
-    private Integer status;
+    private int status;
 
     /**
      * 提交时间
@@ -101,7 +101,7 @@ public class OrderInfo implements Serializable {
      * 是否删除：0-未删除、1-已删除
      */
     @TableField("deleted")
-    private Integer deleted;
+    private int deleted;
 
     /**
      * 操作人
@@ -155,7 +155,7 @@ public class OrderInfo implements Serializable {
      * 来源：0用户、1酒店、2导入
      */
     @TableField("from_type")
-    private Integer fromType;
+    private int fromType;
 
     /**
      * 导入原始备注

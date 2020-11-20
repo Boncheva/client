@@ -79,13 +79,4 @@ public interface HotelService {
      */
     JsonResult allocationOfHousing(HotelDto hotelDto) throws Exception;
 
-    /**
-     * 验证酒店名称或者别名是否已经存在(新增或者修改酒店信息的时候调用)
-     *
-     * @param hotelDto
-     * @return com.yitu.hotel.model.JsonResult
-     * @author zouhao
-     * @date 2020/11/18 11:00
-     */
-    JsonResult verifyThatTheHotelNameOrAliasExists(HotelDto hotelDto);
 }

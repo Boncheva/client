@@ -156,11 +156,7 @@ public class OrderController {
             // 第五步：在该单元格里设置值
             cells.setCellValue(orderInfoList.get(i).getUserName());
             cells = rows.createCell(1);
-            if ("0".equals(orderInfoList.get(i).getSex())) {
-                cells.setCellValue("男");
-            } else {
-                cells.setCellValue("女");
-            }
+            cells.setCellValue("0".equals(orderInfoList.get(i).getSex()) ? "男" : "女");
             cells = rows.createCell(2);
             cells.setCellValue(orderInfoList.get(i).getAge());
             cells = rows.createCell(3);

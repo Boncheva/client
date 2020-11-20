@@ -26,7 +26,7 @@ public class RoomUsers implements Serializable {
      * id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * 姓名
@@ -38,7 +38,7 @@ public class RoomUsers implements Serializable {
      * 证件类型：1.身份证，2.港澳通行证，3.护照，4.回乡证
      */
     @TableField("cert_type")
-    private Integer certType;
+    private int certType;
 
     /**
      * 证件号码
@@ -50,31 +50,31 @@ public class RoomUsers implements Serializable {
      * 年龄
      */
     @TableField("age")
-    private Integer age;
+    private int age;
 
     /**
      * 是否主申请人：0否、1是
      */
     @TableField("main_request")
-    private Integer mainRequest;
+    private int mainRequest;
 
     /**
      * 类型：0登记、1订单
      */
     @TableField("type")
-    private Integer type;
+    private int type;
 
     /**
      * 主申请人用户id
      */
     @TableField("user_id")
-    private Long userId;
+    private long userId;
 
     /**
      * 订单id
      */
     @TableField("order_id")
-    private Long orderId;
+    private long orderId;
 
     /**
      * 核酸检测时间
@@ -86,7 +86,7 @@ public class RoomUsers implements Serializable {
      * 核酸状态：0阴性、1阳性
      */
     @TableField("hs_check_status")
-    private Integer hsCheckStatus;
+    private int hsCheckStatus;
 
     /**
      * 核酸报告文件路径
@@ -98,7 +98,7 @@ public class RoomUsers implements Serializable {
      * 核酸人工审核状态：0待审核、1审核通过、2审核不通过
      */
     @TableField("check_rg_status")
-    private Integer checkRgStatus;
+    private int checkRgStatus;
 
     /**
      * 核酸人工审核原因
@@ -128,7 +128,7 @@ public class RoomUsers implements Serializable {
      * 公安审核状态：0待审核、1审核通过、2审核不通过
      */
     @TableField("check_status")
-    private Integer checkStatus;
+    private int checkStatus;
 
     /**
      * 公安审核原因

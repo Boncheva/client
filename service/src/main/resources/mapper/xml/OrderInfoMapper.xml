@@ -59,7 +59,7 @@
         <if test="street!=null and street!=''">
             and h.street = #{street}
         </if>
-        <if test="status!=null and status!=''">
+        <if test="status!=-1">
             and a.status = #{status}
         </if>
         <if test="portType!=null and portType!=''">

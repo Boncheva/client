@@ -104,10 +104,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         if (StringUtils.isBlank(userDto.getPasswd())) {
             throw new CustomException("密码不能为空");
-        } else {
-            if (userDto.getPasswd().length() < 8) {
-                throw new CustomException("密码长度不能少于8位");
-            }
+        }
+        if (userDto.getPasswd().length() < 8) {
+            throw new CustomException("密码长度不能少于8位");
         }
         User user = userMapper.selectById(userDto.getId());
         if (user == null) {
@@ -116,9 +115,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         user = new User();
         user.setId(Long.parseLong(userDto.getId()));
         user.setPasswd(userDto.getPasswd());
-        int i = userMapper.updateById(user);
-        if (i <= 0) {
-            throw new CustomException("系统错误，修改失败");
+        int result = userMapper.updateById(user);
+        if (result <= 0) {
+            throw new CustomException("修改失败");
         }
         return JsonResult.ok();
     }
@@ -133,9 +132,9 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Override
     public JsonResult deleteUser(String userId) {
-        int i = userMapper.deleteById(userId);
-        if (i <= 0) {
-            throw new CustomException("系统错误，删除失败");
+        int result = userMapper.deleteById(userId);
+        if (result <= 0) {
+            throw new CustomException("删除失败");
         }
         return JsonResult.ok();
     }

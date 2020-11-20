@@ -27,13 +27,13 @@ public class HotelLog implements Serializable {
      * id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * 酒店id
      */
     @TableField("hotel_id")
-    private Long hotelId;
+    private long hotelId;
 
     /**
      * 统计日期
@@ -45,19 +45,19 @@ public class HotelLog implements Serializable {
      * 房型1空闲数
      */
     @TableField("house1_count")
-    private Integer house1Count;
+    private int house1Count;
 
     /**
      * 房型2空闲数
      */
     @TableField("house2_count")
-    private Integer house2Count;
+    private int house2Count;
 
     /**
      * 房型3空闲数
      */
     @TableField("house3_count")
-    private Integer house3Count;
+    private int house3Count;
 
     /**
      * 备注
@@ -75,13 +75,13 @@ public class HotelLog implements Serializable {
      * 今日入住房数
      */
     @TableField("occupancy_today")
-    private Integer occupancyToday;
+    private int occupancyToday;
 
     /**
      * 今日退房房数
      */
     @TableField("check_out_today")
-    private Integer checkOutToday;
+    private int checkOutToday;
 
     /**
      * 明日房源信息是否填报 0:未填报 1:已填报
@@ -99,7 +99,7 @@ public class HotelLog implements Serializable {
      * 管控后可用房间总数
      */
     @TableField("control_number")
-    private Integer controlNumber;
+    private int controlNumber;
 
     /**
      * 酒店添加时间

@@ -3,7 +3,6 @@ package com.yitu.hotel.controller;
 import com.github.pagehelper.PageInfo;
 import com.yitu.hotel.dto.hotel.HotelDto;
 import com.yitu.hotel.model.JsonResult;
-import com.yitu.hotel.entity.hotel.Hotel;
 import com.yitu.hotel.service.HotelService;
 import com.yitu.hotel.vo.hotel.HotelVo;
 import io.swagger.annotations.ApiOperation;
@@ -133,19 +132,6 @@ public class HotelController {
         } catch (Exception e) {
             return JsonResult.fail(null);
         }
-    }
-
-    /**
-     * 验证酒店名称或者别名是否已经存在(新增或者修改酒店信息的时候调用)
-     *
-     * @param hotelDto
-     * @return com.yitu.hotel.model.JsonResult
-     * @author zouhao
-     * @date 2020/11/18 11:00
-     */
-    @RequestMapping(value = "verify/hotel", method = RequestMethod.POST)
-    public JsonResult verifyThatTheHotelNameOrAliasExists(HotelDto hotelDto) {
-        return hotelService.verifyThatTheHotelNameOrAliasExists(hotelDto);
     }
 
 }

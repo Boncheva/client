@@ -4,7 +4,6 @@ import com.yitu.hotel.dto.common.PageDto;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
-import java.math.BigInteger;
 import java.util.List;
 
 /**

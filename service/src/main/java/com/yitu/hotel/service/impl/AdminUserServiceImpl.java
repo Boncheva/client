@@ -46,15 +46,14 @@ public class AdminUserServiceImpl implements AdminUserService {
         AdminUser result = adminUserMapper.selectOne(qw);
         if (result == null) {
             log.error("用户名或密码错误");
-            return JsonResult.fail("用户名或密码错误");
-        } else {
-            //验证通过，绑定token
-            Map<String, Object> map = new HashMap();
-            String Token = operateToKen(result, result.getId());
-            map.put("userToken", Token);
-            map.put("userInfo", result);
-            return JsonResult.ok(map);
+            throw new CustomException("用户名或密码错误");
         }
+        //验证通过，绑定token
+        Map<String, Object> map = new HashMap();
+        String Token = operateToKen(result, result.getId());
+        map.put("userToken", Token);
+        map.put("userInfo", result);
+        return JsonResult.ok(map);
     }
 
     @Override
@@ -95,8 +94,8 @@ public class AdminUserServiceImpl implements AdminUserService {
             TokenStr = creatToken(userId, date);
             token.setToken(TokenStr);
             token.setBuildTime(nowTime);
-            int i = tokenMapper.updateById(token);
-            if (i <= 0) {
+            int result = tokenMapper.updateById(token);
+            if (result <= 0) {
                 throw new CustomException("更新token失败");
             }
         }

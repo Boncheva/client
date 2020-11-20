@@ -24,13 +24,13 @@ public class HotelGovLog implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private int id;
 
     /**
      * 酒店id
      */
     @TableField("hotel_id")
-    private Long hotelId;
+    private long hotelId;
 
     /**
      * 酒店对应区划分
@@ -48,19 +48,19 @@ public class HotelGovLog implements Serializable {
      * 房型1管控数
      */
     @TableField("house1_control_count")
-    private Integer house1ControlCount;
+    private int house1ControlCount;
 
     /**
      * 房型2管控数
      */
     @TableField("house2_control_count")
-    private Integer house2ControlCount;
+    private int house2ControlCount;
 
     /**
      * 房型3管控数
      */
     @TableField("house3_control_count")
-    private Integer house3ControlCount;
+    private int house3ControlCount;
 
     /**
      * 0 - 未上报， 1 - 保存， 2 - 已上报（不可修改）
@@ -78,7 +78,7 @@ public class HotelGovLog implements Serializable {
      * 修改政府用户id
      */
     @TableField("update_user_id")
-    private Integer updateUserId;
+    private int updateUserId;
 
     /**
      * 修改时间
@@ -90,18 +90,18 @@ public class HotelGovLog implements Serializable {
      * 房型4管控数
      */
     @TableField("house4_control_count")
-    private Integer house4ControlCount;
+    private int house4ControlCount;
 
     /**
      * 房型5管控数
      */
     @TableField("house5_control_count")
-    private Integer house5ControlCount;
+    private int house5ControlCount;
 
     /**
      * 房型6管控数
      */
     @TableField("house6_control_count")
-    private Integer house6ControlCount;
+    private int house6ControlCount;
 
 }

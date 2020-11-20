@@ -17,6 +17,7 @@ import com.yitu.hotel.entity.hotel.Hotel;
 import com.yitu.hotel.entity.order.OrderInfo;
 import com.yitu.hotel.entity.user.User;
 import com.yitu.hotel.service.OrderService;
+import com.yitu.hotel.util.DateTimeUtil;
 import com.yitu.hotel.vo.hotel.HotelVo;
 import com.yitu.hotel.vo.order.OrderInfoVo;
 import com.yitu.hotel.vo.user.UserVo;
@@ -79,9 +80,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public JsonResult deleteOrder(String id) {
-        int i = orderInfoMapper.deleteById(id);
-        if (i <= 0) {
-            throw new CustomException("系统错误，删除失败");
+        int result = orderInfoMapper.deleteById(id);
+        if (result <= 0) {
+            throw new CustomException("删除失败");
         }
         return JsonResult.ok();
     }
@@ -99,9 +100,9 @@ public class OrderServiceImpl implements OrderService {
         if (orderInfoDto.getIdList() != null && orderInfoDto.getIdList().size() > 0) {
             QueryWrapper qw = new QueryWrapper();
             qw.in("id", orderInfoDto.getIdList());
-            int i = orderInfoMapper.delete(qw);
-            if (i <= 0) {
-                throw new CustomException("系统错误，批量删除失败");
+            int result = orderInfoMapper.delete(qw);
+            if (result <= 0) {
+                throw new CustomException("批量删除失败");
             }
             return JsonResult.ok();
         } else {
@@ -120,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public JsonResult uploadOrderListInfo(List<MultipartFile> file) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter dTf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         NumberFormat nf = NumberFormat.getInstance();
         XSSFWorkbook wb = null;
@@ -141,7 +142,7 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException("文件不存在");
         } catch (IOException e) {
             log.error("系统错误，上传失败", e);
-            throw new CustomException("系统错误，上传失败");
+            throw new CustomException("上传失败");
         }
         sheet = wb.getSheetAt(0);
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -159,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
             if (hotel == null) {
                 throw new CustomException("第" + i + "行，酒店不存在");
             }
-            if (hotel.getDeleted()) {
+            if (hotel.getDeleted() == 1) {
                 throw new CustomException("第" + i + "行，酒店已删除");
             }
             Long hotelId = Long.valueOf(nf.format(numericCellValue));
@@ -216,7 +217,7 @@ public class OrderServiceImpl implements OrderService {
             }
             LocalDate localDate;
             try {
-                localDate = LocalDate.parse(row.getCell(4).toString(), df);
+                localDate = DateTimeUtil.parseLocalDate(row.getCell(4).toString(), dateTimeFormatter);
             } catch (DateTimeParseException ex) {
                 throw new CustomException("第" + i + "行，入住日期格式不正确");
             }
@@ -302,7 +303,7 @@ public class OrderServiceImpl implements OrderService {
     public JsonResult updateOrder(OrderInfoDto orderInfoDto) {
         LocalDate checkinDate = null;
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        if (orderInfoDto.getId() == 0) {
+        if (orderInfoDto.getId() <= 0) {
             throw new CustomException("参数有误");
         }
         String houseType = houseTypeCode.getType(orderInfoDto.getHouseType());
@@ -311,22 +312,22 @@ public class OrderServiceImpl implements OrderService {
         }
         if (StringUtils.isBlank(orderInfoDto.getCheckinDate())) {
             throw new CustomException("入住时间不能为空");
-        } else {
-            try {
-                checkinDate = LocalDate.parse(orderInfoDto.getCheckinDate(), dateTimeFormatter);
-            } catch (DateTimeParseException ex) {
-                throw new CustomException("入住时间格式有误");
-            }
         }
+        try {
+            checkinDate = DateTimeUtil.parseLocalDate(orderInfoDto.getCheckinDate(), dateTimeFormatter);
+        } catch (DateTimeParseException ex) {
+            throw new CustomException("入住时间格式有误");
+        }
+
         if (StringUtils.isBlank(orderInfoDto.getPrice())) {
             throw new CustomException("房间价格不能为空");
-        } else {
-            try {
-                Integer.parseInt(orderInfoDto.getPrice());
-            } catch (NumberFormatException ex) {
-                throw new CustomException("房间价格不是数字");
-            }
         }
+        try {
+            Integer.parseInt(orderInfoDto.getPrice());
+        } catch (NumberFormatException ex) {
+            throw new CustomException("房间价格不是数字");
+        }
+
         String status = orderStatusCode.getStatus(orderInfoDto.getStatus());
         if (status == null) {
             throw new CustomException("状态类型不存在");
@@ -352,9 +353,9 @@ public class OrderServiceImpl implements OrderService {
         orderInfo.setRoomNum(orderInfoDto.getRoomNum());
         orderInfo.setFromType(orderInfoDto.getFromType());
         orderInfo.setRemark(orderInfoDto.getRemark());
-        int i = orderInfoMapper.updateById(orderInfo);
-        if (i <= 0) {
-            throw new CustomException("修改失败，系统错误");
+        int result = orderInfoMapper.updateById(orderInfo);
+        if (result <= 0) {
+            throw new CustomException("修改失败");
         }
         return JsonResult.ok();
     }

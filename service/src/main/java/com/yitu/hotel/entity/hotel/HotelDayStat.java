@@ -26,13 +26,13 @@ public class HotelDayStat implements Serializable {
      * id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * 酒店id
      */
     @TableField("hotel_id")
-    private Long hotelId;
+    private long hotelId;
 
     /**
      * 统计日期
@@ -68,25 +68,25 @@ public class HotelDayStat implements Serializable {
      * 房型1总间数
      */
     @TableField("house1_total_count")
-    private Integer house1TotalCount;
+    private int house1TotalCount;
 
     /**
      * 房型1可预约数
      */
     @TableField("house1_show_count")
-    private Integer house1ShowCount;
+    private int house1ShowCount;
 
     /**
      * 房型1可用数
      */
     @TableField("house1_count")
-    private Integer house1Count;
+    private int house1Count;
 
     /**
      * 房型1管控数
      */
     @TableField("house1_control_count")
-    private Integer house1ControlCount;
+    private int house1ControlCount;
 
     /**
      * 房型1价格
@@ -104,25 +104,25 @@ public class HotelDayStat implements Serializable {
      * 房型2总间数
      */
     @TableField("house2_total_count")
-    private Integer house2TotalCount;
+    private int house2TotalCount;
 
     /**
      * 房型2可预约数
      */
     @TableField("house2_show_count")
-    private Integer house2ShowCount;
+    private int house2ShowCount;
 
     /**
      * 房型2可用数
      */
     @TableField("house2_count")
-    private Integer house2Count;
+    private int house2Count;
 
     /**
      * 房型2管控数
      */
     @TableField("house2_control_count")
-    private Integer house2ControlCount;
+    private int house2ControlCount;
 
     /**
      * 房型2价格
@@ -140,37 +140,37 @@ public class HotelDayStat implements Serializable {
      * 房型3总间数
      */
     @TableField("house3_total_count")
-    private Integer house3TotalCount;
+    private int house3TotalCount;
 
     /**
      * 房型3可预约数
      */
     @TableField("house3_show_count")
-    private Integer house3ShowCount;
+    private int house3ShowCount;
 
     /**
      * 房型3可用数
      */
     @TableField("house3_count")
-    private Integer house3Count;
+    private int house3Count;
 
     /**
      * 房型3管控数
      */
     @TableField("house3_control_count")
-    private Integer house3ControlCount;
+    private int house3ControlCount;
 
     /**
      * 今日入住房数
      */
     @TableField("occupancy_today")
-    private Integer occupancyToday;
+    private int occupancyToday;
 
     /**
      * 今日退房房数
      */
     @TableField("check_out_today")
-    private Integer checkOutToday;
+    private int checkOutToday;
 
     /**
      * 房型3价格
@@ -200,6 +200,6 @@ public class HotelDayStat implements Serializable {
      * 城市：1-深圳房源 2-珠海房源
      */
     @TableField("area_type")
-    private Integer areaType;
+    private int areaType;
 
 }

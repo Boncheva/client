@@ -27,7 +27,7 @@ public class User implements Serializable {
      * id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * 标识号
@@ -51,7 +51,7 @@ public class User implements Serializable {
      * 性别：0-男、1-女
      */
     @TableField("sex")
-    private Integer sex;
+    private int sex;
 
     /**
      * 出生日期
@@ -63,7 +63,7 @@ public class User implements Serializable {
      * 年龄
      */
     @TableField("age")
-    private Integer age;
+    private int age;
 
     /**
      * 香港手机号码
@@ -87,7 +87,7 @@ public class User implements Serializable {
      * 证件类型：1.身份证，2.港澳通行证，3.护照，4.回乡证
      */
     @TableField("cert_type")
-    private Integer certType;
+    private int certType;
 
     /**
      * 证件号码
@@ -99,7 +99,7 @@ public class User implements Serializable {
      * 入境口岸
      */
     @TableField("port_type")
-    private Integer portType;
+    private int portType;
 
     /**
      * 目的地省
@@ -153,7 +153,7 @@ public class User implements Serializable {
      * 基础性疾病类型
      */
     @TableField("base_illness_type")
-    private Integer baseIllnessType;
+    private int baseIllnessType;
 
     /**
      * 特殊需求服务
@@ -177,7 +177,7 @@ public class User implements Serializable {
      * 爽约次数
      */
     @TableField("shy_count")
-    private Integer shyCount;
+    private int shyCount;
 
     /**
      * 注册时间
@@ -201,13 +201,13 @@ public class User implements Serializable {
      * 是否删除: 0-未删除、1-已删除
      */
     @TableField("deleted")
-    private Integer deleted;
+    private int deleted;
 
     /**
      * 是否填报
      */
     @TableField("fill_status")
-    private Integer fillStatus;
+    private int fillStatus;
 
     /**
      * 核酸检测时间
@@ -219,7 +219,7 @@ public class User implements Serializable {
      * 核酸状态：0阴性、1阳性
      */
     @TableField("hs_check_status")
-    private Integer hsCheckStatus;
+    private int hsCheckStatus;
 
     /**
      * 境内紧急联系人姓名
@@ -237,7 +237,7 @@ public class User implements Serializable {
      * 公安审核状态：0待审核、1审核通过、2审核不通过
      */
     @TableField("check_status")
-    private Integer checkStatus;
+    private int checkStatus;
 
     /**
      * 公安审核原因
@@ -261,7 +261,7 @@ public class User implements Serializable {
      * 核酸人工审核状态：0待审核、1审核通过、2审核不通过
      */
     @TableField("hs_rg_check_status")
-    private Integer hsRgCheckStatus;
+    private int hsRgCheckStatus;
 
     /**
      * 核酸人工审核原因
@@ -285,7 +285,7 @@ public class User implements Serializable {
      * 社区审核状态：0待审核、1审核通过、2审核不通过
      */
     @TableField("sq_check_status")
-    private Integer sqCheckStatus;
+    private int sqCheckStatus;
 
     /**
      * 社区审核原因
@@ -315,11 +315,11 @@ public class User implements Serializable {
      * 来源类型：0一码通海关推送、1一码通粤省事补登、2手机端注册
      */
     @TableField("from_type")
-    private Integer fromType;
+    private int fromType;
 
     /**
      * 用户类型：0香港入境普通市民、1机场国际航班人员、2跨境货车司机、3港口入境船员
      */
     @TableField("user_type")
-    private Integer userType;
+    private int userType;
 }

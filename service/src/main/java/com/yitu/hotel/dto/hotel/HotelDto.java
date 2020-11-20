@@ -74,12 +74,12 @@ public class HotelDto extends PageDto {
     /**
      * 是否删除: 0-未删除、1-已删除
      */
-    private Integer deleted;
+    private int deleted;
 
     /**
      * 是否展示 0-展示、1-不展示
      */
-    private Integer notshow;
+    private int notshow;
 
     /**
      * 酒店登陆账号

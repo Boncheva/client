@@ -10,6 +10,8 @@ import com.yitu.hotel.mapper.HotelMapper;
 import com.yitu.hotel.model.JsonResult;
 import com.yitu.hotel.entity.hotel.Hotel;
 import com.yitu.hotel.service.HotelService;
+import com.yitu.hotel.util.DateTimeUtil;
+import com.yitu.hotel.util.PatternUtil;
 import com.yitu.hotel.vo.hotel.HotelVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -88,35 +90,26 @@ public class HotelServiceImpl implements HotelService {
         LocalDate controlDate = null;
         LocalDate reserveDate = null;
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        //酒店名称是否重复校验
         if (StringUtils.isBlank(hotelDto.getHotelName())) {
             throw new CustomException("酒店名称不能为空");
-        } else {
-            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
-            if (jsonResult.getStatus() == 500) {
-                return JsonResult.fail(jsonResult.getMsg());
-            }
         }
+        //酒店名称是否重复校验
+        verifyIfTheHotelNameIsDuplicate(hotelDto);
 
-        //酒店别名是否重复校验
         if (StringUtils.isBlank(hotelDto.getHotelOtherName())) {
             throw new CustomException("酒店别名不能为空");
-        } else {
-            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
-            if (jsonResult.getStatus() == 500) {
-                return JsonResult.fail(jsonResult.getMsg());
-            }
         }
+        //酒店别名是否重复校验
+        verifyThatTheHotelAliasExists(hotelDto);
 
         //酒店类型校验
         if (StringUtils.isBlank(hotelDto.getHotelTypes())) {
             throw new CustomException("酒店类型不能为空");
-        } else {
-            String[] split = hotelDto.getHotelTypes().split(",");
-            for (int i = 0; i < split.length; i++) {
-                if (hotelTypeCode.getType(split[i]) == null) {
-                    throw new CustomException("酒店类型中包含系统不存在的的类型");
-                }
+        }
+        String[] split = hotelDto.getHotelTypes().split(",");
+        for (int i = 0; i < split.length; i++) {
+            if (hotelTypeCode.getType(split[i]) == null) {
+                throw new CustomException("酒店类型中包含系统不存在的的类型");
             }
         }
         if (StringUtils.isBlank(hotelDto.getAddress())) {
@@ -127,13 +120,12 @@ public class HotelServiceImpl implements HotelService {
         }
         if (StringUtils.isBlank(hotelDto.getContractMobile())) {
             throw new CustomException("酒店联系电话不能为空");
-        } else {
-            String pattern = "^(1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9]))\\d{8}$";
-            boolean isMatch = Pattern.matches(pattern, hotelDto.getContractMobile());
-            if (!isMatch) {
-                throw new CustomException("手机格式不正确");
-            }
         }
+        boolean isMatch = PatternUtil.matches(hotelDto.getContractMobile());
+        if (!isMatch) {
+            throw new CustomException("手机格式不正确");
+        }
+
         if (StringUtils.isBlank(hotelDto.getDistrict())) {
             throw new CustomException("区域不能为空");
         }
@@ -145,35 +137,38 @@ public class HotelServiceImpl implements HotelService {
         }
         if (StringUtils.isBlank(hotelDto.getHotelPassword())) {
             throw new CustomException("酒店管理密码不能为空");
-        } else {
-            if (hotelDto.getHotelPassword().length() < 8) {
-                throw new CustomException("酒店管理密码长度不能少于8位");
-            }
         }
+        if (hotelDto.getHotelPassword().length() < 8) {
+            throw new CustomException("酒店管理密码长度不能少于8位");
+        }
+
         if (StringUtils.isBlank(hotelDto.getControlDate())) {
             throw new CustomException("酒店管控日期不能为空");
-        } else {
-            try {
-                controlDate = LocalDate.parse(hotelDto.getControlDate(), dateTimeFormatter);
-            } catch (DateTimeParseException ex) {
-                throw new CustomException("酒店管控时间格式有误");
-            }
+        }
+        try {
+            controlDate = DateTimeUtil.parseLocalDate(hotelDto.getControlDate(), dateTimeFormatter);
+        } catch (DateTimeParseException ex) {
+            throw new CustomException("酒店管控时间格式有误");
+
         }
         if (StringUtils.isBlank(hotelDto.getReserveDate())) {
             throw new CustomException("酒店预定日期不能为空");
-        } else {
-            try {
-                reserveDate = LocalDate.parse(hotelDto.getReserveDate(), dateTimeFormatter);
-            } catch (DateTimeParseException ex) {
-                throw new CustomException("酒店预定日期格式有误");
-            }
         }
+        try {
+            reserveDate = DateTimeUtil.parseLocalDate(hotelDto.getReserveDate(), dateTimeFormatter);
+        } catch (DateTimeParseException ex) {
+            throw new CustomException("酒店预定日期格式不正确");
+        }
+
         Hotel hotel = new Hotel();
         BeanUtils.copyProperties(hotelDto, hotel);
         hotel.setControlDate(controlDate);
         hotel.setReserveDate(reserveDate);
         hotel.setAddDate(LocalDateTime.now());
-        hotelMapper.insert(hotel);
+        int result = hotelMapper.insert(hotel);
+        if (result <= 0) {
+            throw new CustomException("新增失败");
+        }
         return JsonResult.ok();
     }
 
@@ -187,42 +182,33 @@ public class HotelServiceImpl implements HotelService {
      */
     @Override
     public JsonResult updateHotel(HotelDto hotelDto) throws Exception {
-        if (hotelDto.getId() == 0) {
+        if (hotelDto.getId() <= 0) {
             throw new CustomException("参数有误");
-        } else {
-            Hotel hotel = hotelMapper.selectById(hotelDto.getId());
-            if (hotel == null) {
-                throw new CustomException("该酒店不存在");
-            } else {
-                if (hotel.getDeleted()) {
-                    throw new CustomException("该酒店已被删除");
-                }
-            }
+        }
+        Hotel hotel = hotelMapper.selectById(hotelDto.getId());
+        if (hotel == null) {
+            throw new CustomException("该酒店不存在");
+        }
+        if (hotel.getDeleted() == 1) {
+            throw new CustomException("该酒店已被删除");
         }
         if (StringUtils.isBlank(hotelDto.getHotelName())) {
             throw new CustomException("酒店名称不能为空");
-        } else {
-            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
-            if (jsonResult.getStatus() == 500) {
-                return JsonResult.fail(jsonResult.getMsg());
-            }
         }
+        verifyIfTheHotelNameIsDuplicate(hotelDto);
+
         if (StringUtils.isBlank(hotelDto.getHotelOtherName())) {
             throw new CustomException("酒店别名不能为空");
-        } else {
-            JsonResult jsonResult = verifyThatTheHotelNameOrAliasExists(hotelDto);
-            if (jsonResult.getStatus() == 500) {
-                return JsonResult.fail(jsonResult.getMsg());
-            }
         }
+        verifyThatTheHotelAliasExists(hotelDto);
+
         if (StringUtils.isBlank(hotelDto.getHotelTypes())) {
             throw new CustomException("酒店类型不能为空");
-        } else {
-            String[] split = hotelDto.getHotelTypes().split(",");
-            for (int i = 0; i < split.length; i++) {
-                if (hotelTypeCode.getType(split[i]) == null) {
-                    throw new CustomException("酒店类型中包含系统不存在的的类型");
-                }
+        }
+        String[] split = hotelDto.getHotelTypes().split(",");
+        for (int i = 0; i < split.length; i++) {
+            if (hotelTypeCode.getType(split[i]) == null) {
+                throw new CustomException("酒店类型中包含系统不存在的的类型");
             }
         }
         if (StringUtils.isBlank(hotelDto.getAddress())) {
@@ -233,36 +219,24 @@ public class HotelServiceImpl implements HotelService {
         }
         if (StringUtils.isBlank(hotelDto.getContractMobile())) {
             throw new CustomException("酒店联系电话不能为空");
-        } else {
-            String pattern = "^(1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9]))\\d{8}$";
-            boolean isMatch = Pattern.matches(pattern, hotelDto.getContractMobile());
-            if (!isMatch) {
-                throw new CustomException("手机格式不正确");
-            }
         }
-        if (hotelDto.getDeleted() == null) {
-            throw new CustomException("请选择是否删除");
-        } else {
-            if (hotelDto.getDeleted() != 0 && hotelDto.getDeleted() != 1) {
-                throw new CustomException("是否删除参数有误");
-            }
+        boolean isMatch = PatternUtil.matches(hotelDto.getContractMobile());
+        if (!isMatch) {
+            throw new CustomException("手机格式不正确");
         }
-        if (hotelDto.getNotshow() == null) {
-            throw new CustomException("请选择是否展示");
-        } else {
-            if (hotelDto.getNotshow() != 0 && hotelDto.getNotshow() != 1) {
-                throw new CustomException("是否展示参数有误");
-            }
+
+        if (hotelDto.getNotshow() != 0 && hotelDto.getNotshow() != 1) {
+            throw new CustomException("是否展示参数有误");
         }
+
         if (StringUtils.isBlank(hotelDto.getDistrict())) {
             throw new CustomException("区域不能为空");
         }
         if (StringUtils.isBlank(hotelDto.getStreet())) {
             throw new CustomException("街道不能为空");
         }
-        Hotel hotel = new Hotel();
-        hotel.setId(hotelDto.getId());
         hotel.setHotelName(hotelDto.getHotelName());
+        hotel.setHotelOtherName(hotelDto.getHotelOtherName());
         hotel.setHotelTypes(hotelDto.getHotelTypes());
         hotel.setAddress(hotelDto.getAddress());
         hotel.setContractUser(hotelDto.getContractUser());
@@ -270,19 +244,10 @@ public class HotelServiceImpl implements HotelService {
         hotel.setDistrict(hotelDto.getDistrict());
         hotel.setStreet(hotelDto.getStreet());
         hotel.setRemark(hotelDto.getRemark());
-        if (hotelDto.getDeleted() == 0) {
-            hotel.setDeleted(false);
-        } else {
-            hotel.setDeleted(true);
-        }
-        if (hotelDto.getNotshow() == 0) {
-            hotel.setNotshow(false);
-        } else {
-            hotel.setNotshow(true);
-        }
-        int i = hotelMapper.updateById(hotel);
-        if (i <= 0) {
-            throw new CustomException("系统错误，修改失败");
+        hotel.setNotshow(hotelDto.getNotshow() == 0 ? 0 : 1);
+        int result = hotelMapper.updateById(hotel);
+        if (result <= 0) {
+            throw new CustomException("修改失败");
         }
         return JsonResult.ok();
     }
@@ -297,9 +262,9 @@ public class HotelServiceImpl implements HotelService {
      */
     @Override
     public JsonResult deleteHotel(String id) {
-        int i = hotelMapper.deleteById(id);
-        if (i <= 0) {
-            throw new CustomException("系统错误，删除失败");
+        int result = hotelMapper.deleteById(id);
+        if (result <= 0) {
+            throw new CustomException("删除失败");
         }
         return JsonResult.ok();
     }
@@ -314,16 +279,15 @@ public class HotelServiceImpl implements HotelService {
      */
     @Override
     public JsonResult allocationOfHousing(HotelDto hotelDto) throws Exception {
-        if (hotelDto.getId() == 0) {
+        if (hotelDto.getId() <= 0) {
             throw new CustomException("参数有误");
         }
         Hotel hotel = hotelMapper.selectById(hotelDto.getId());
         if (hotel == null) {
             throw new CustomException("该酒店不存在");
-        } else {
-            if (hotel.getDeleted()) {
-                throw new CustomException("该酒店已被删除");
-            }
+        }
+        if (hotel.getDeleted() == 1) {
+            throw new CustomException("该酒店已被删除");
         }
         hotel.setHouse1TotalCount(hotel.getHouse1TotalCount() + hotelDto.getHouse1TotalCount());
         hotel.setHouse1ShowCount(hotel.getHouse1ShowCount() + hotelDto.getHouse1TotalCount());
@@ -343,47 +307,53 @@ public class HotelServiceImpl implements HotelService {
         hotel.setHouse6TotalCount(hotel.getHouse6TotalCount() + hotelDto.getHouse6TotalCount());
         hotel.setHouse6ShowCount(hotel.getHouse6ShowCount() + hotelDto.getHouse6TotalCount());
 
-        int i = hotelMapper.updateById(hotel);
-        if (i <= 0) {
+        int result = hotelMapper.updateById(hotel);
+        if (result <= 0) {
             throw new CustomException("分配房源失败");
         }
         return JsonResult.ok();
     }
 
     /**
-     * 验证酒店名称或者别名是否已经存在(新增或者修改酒店信息的时候调用)
+     * 验证酒店名称是否已经存在(新增或者修改酒店信息的时候调用)
      *
      * @param hotelDto
      * @return com.yitu.hotel.model.JsonResult
      * @author zouhao
      * @date 2020/11/18 11:00
      */
-    @Override
-    public JsonResult verifyThatTheHotelNameOrAliasExists(HotelDto hotelDto) {
+    public void verifyIfTheHotelNameIsDuplicate(HotelDto hotelDto) {
         QueryWrapper qw = new QueryWrapper();
-        if (StringUtils.isNotBlank(hotelDto.getHotelName())) {
-            qw.eq("hotel_name", hotelDto.getHotelName());
-            if (StringUtils.isNotBlank(String.valueOf(hotelDto.getId()))) {
-                //如果参数中包含酒店id，则为更新判断,否则为新增判断
-                qw.ne("id", hotelDto.getId());
-            }
-            List list = hotelMapper.selectList(qw);
-            if (list.size() > 0) {
-                throw new CustomException("酒店名称已存在");
-            }
+        qw.eq("hotel_name", hotelDto.getHotelName());
+        //更新判断
+        if (hotelDto.getId() > 0) {
+            qw.ne("id", hotelDto.getId());
         }
-        qw.clear();
-        if (StringUtils.isNotBlank(hotelDto.getHotelOtherName())) {
-            qw.eq("hotel_other_name", hotelDto.getHotelOtherName());
-            if (StringUtils.isNotBlank(String.valueOf(hotelDto.getId()))) {
-                //如果参数中包含酒店id，则为更新判断,否则为新增判断
-                qw.ne("id", hotelDto.getId());
-            }
-            List list = hotelMapper.selectList(qw);
-            if (list.size() > 0) {
-                throw new CustomException("酒店别名已存在");
-            }
+        List list = hotelMapper.selectList(qw);
+        if (list.size() > 0) {
+            throw new CustomException("酒店名称已存在");
         }
-        return JsonResult.ok();
     }
+
+    /**
+     * 验证酒店别名是否已经存在(新增或者修改酒店信息的时候调用)
+     *
+     * @param hotelDto
+     * @return com.yitu.hotel.model.JsonResult
+     * @author zouhao
+     * @date 2020/11/18 11:00
+     */
+    public void verifyThatTheHotelAliasExists(HotelDto hotelDto) {
+        QueryWrapper qw = new QueryWrapper();
+        qw.eq("hotel_other_name", hotelDto.getHotelOtherName());
+        //更新判断
+        if (hotelDto.getId() > 0) {
+            qw.ne("id", hotelDto.getId());
+        }
+        List list = hotelMapper.selectList(qw);
+        if (list.size() > 0) {
+            throw new CustomException("酒店别名已存在");
+        }
+    }
+
 }

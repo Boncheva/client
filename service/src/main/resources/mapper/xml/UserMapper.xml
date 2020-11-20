@@ -93,13 +93,10 @@
                 and report_path is null
             </if>
         </if>
-        <if test="deleted!=null">
-            and deleted = #{deleted}
-        </if>
-        <if test="fillStatus!=null">
+        <if test="fillStatus!=-1">
             and fill_status = #{fillStatus}
         </if>
-        <if test="userType!=null">
+        <if test="userType!=-1">
             and user_type = #{userType}
         </if>
         <if test="idOrName!=null and idOrName!=''">

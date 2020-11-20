@@ -21,16 +21,6 @@ public class UserDto extends PageDto {
     private String id;
 
     /**
-     * 姓名
-     */
-    private String userName;
-
-    /**
-     * 证件类型：1.身份证，2.港澳通行证，3.护照，4.回乡证
-     */
-    private int certType;
-
-    /**
      * 目的地省
      */
     private String province;
@@ -51,14 +41,9 @@ public class UserDto extends PageDto {
     private String reportPath;
 
     /**
-     * 是否删除: 0-未删除、1-已删除
-     */
-    private Integer deleted;
-
-    /**
      * 是否填报
      */
-    private Integer fillStatus;
+    private int fillStatus;
 
     /**
      * 核酸状态：0阴性、1阳性
@@ -68,7 +53,7 @@ public class UserDto extends PageDto {
     /**
      * 用户类型：0香港入境普通市民、1机场国际航班人员、2跨境货车司机、3港口入境船员
      */
-    private Integer userType;
+    private int userType;
 
     /**
      * 核算报告是否上传 0未上传、1已上传

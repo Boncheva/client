@@ -160,10 +160,10 @@
         <if test="street!=null and street!=''">
             and street = #{street}
         </if>
-        <if test="deleted!=null">
+        <if test="deleted!=-1">
             and deleted = #{deleted}
         </if>
-        <if test="notshow!=null">
+        <if test="notshow!=-1">
             and notshow = #{notshow}
         </if>
         <if test="hotelTypes!=null and hotelTypes!=''">

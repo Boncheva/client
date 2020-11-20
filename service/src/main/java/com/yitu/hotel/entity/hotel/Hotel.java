@@ -30,7 +30,7 @@ public class Hotel implements Serializable {
      * id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private long id;
 
     /**
      * 酒店名称
@@ -222,13 +222,13 @@ public class Hotel implements Serializable {
      * 是否删除: 0-未删除、1-已删除
      */
     @TableField("deleted")
-    private Boolean deleted;
+    private int deleted;
 
     /**
      * 是否展示 0-展示、1-不展示
      */
     @TableField("notshow")
-    private Boolean notshow;
+    private int notshow;
 
     /**
      * 酒店登陆账号
