@@ -572,6 +572,8 @@
                 }
                 if (this.status != null) {
                     data.status = this.status;
+                } else {
+                    data.status = -1;
                 }
                 if (pageNum != null) {
                     data.pageNum = pageNum;

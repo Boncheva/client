@@ -44,22 +44,22 @@
                     </div>
                     <div class="layui-inline">
                         <el-select v-model="deleted" placeholder="请选择账号状态">
-                            <el-option label="正常" value="0"></el-option>
-                            <el-option label="已删除" value="1"></el-option>
+                            <el-option label="正常" value=0></el-option>
+                            <el-option label="已删除" value=1></el-option>
                         </el-select>
                     </div>
                     <div class="layui-inline">
                         <el-select v-model="fillStatus" placeholder="是否填报">
-                            <el-option label="否" value="0"></el-option>
-                            <el-option label="是" value="1"></el-option>
+                            <el-option label="否" value=0></el-option>
+                            <el-option label="是" value=1></el-option>
                         </el-select>
                     </div>
                     <div class="layui-inline">
                         <el-select v-model="userType" placeholder="用户类型">
-                            <el-option label="香港入境普通市民" value="0"></el-option>
-                            <el-option label="机场国际航班人员" value="1"></el-option>
-                            <el-option label="跨境货车司机" value="2"></el-option>
-                            <el-option label="港口入境船员" value="3"></el-option>
+                            <el-option label="香港入境普通市民" value=0></el-option>
+                            <el-option label="机场国际航班人员" value=1></el-option>
+                            <el-option label="跨境货车司机" value=2></el-option>
+                            <el-option label="港口入境船员" value=3></el-option>
                         </el-select>
                     </div>
                     <div class="layui-inline">
@@ -343,10 +343,17 @@
                     city: this.city,
                     area: this.area,
                     isSubmit: this.isSubmit,
-                    deleted: this.deleted,
-                    fillStatus: this.fillStatus,
-                    userType: this.userType,
                     idOrName: this.idOrName
+                }
+                if (this.userType != null) {
+                    data.userType = this.userType;
+                } else {
+                    data.userType = -1;
+                }
+                if (this.fillStatus != null) {
+                    data.fillStatus = this.fillStatus;
+                } else {
+                    data.fillStatus = -1;
                 }
                 if (pageNum != null) {
                     data.pageNum = pageNum;
@@ -437,7 +444,6 @@
                     this.city = null,
                     this.area = null,
                     this.isSubmit = null,
-                    this.deleted = null,
                     this.fillStatus = null,
                     this.userType = null,
                     this.idOrName = null,
@@ -574,7 +580,7 @@
                         this.$message.error(res.body.msg)
                     } else {
                         this.$message.success("删除成功")
-                        this.appUserList();
+                        this.appUserList(null, 1);
                     }
                 })
             }

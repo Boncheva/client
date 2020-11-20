@@ -25,14 +25,14 @@
             </div>
             <div class="layui-inline">
                 <el-select v-model="deleted" placeholder="是否删除">
-                    <el-option label="未删除" value="0"></el-option>
-                    <el-option label="已删除" value="1"></el-option>
+                    <el-option label="未删除" value=0></el-option>
+                    <el-option label="已删除" value=1></el-option>
                 </el-select>
             </div>
             <div class="layui-inline">
                 <el-select v-model="notshow" placeholder="是否显示">
-                    <el-option label="展示" value="0"></el-option>
-                    <el-option label="不展示" value="1"></el-option>
+                    <el-option label="展示" value=0></el-option>
+                    <el-option label="不展示" value=1></el-option>
                 </el-select>
             </div>
             <div class="layui-inline">
@@ -224,13 +224,6 @@
                     备注：
                     <el-input v-model="remarkAdd"></el-input>
                 </td>
-                <td>
-                    是否删除：
-                    <el-select v-model="deletedAdd">
-                        <el-option label="未删除" value="0"></el-option>
-                        <el-option label="已删除" value="1"></el-option>
-                    </el-select>
-                </td>
             </tr>
             <tr>
             </tr>
@@ -361,13 +354,6 @@
             </tr>
             <tr>
                 <td>
-                    <span>是否删除：</span>
-                    <el-select v-model="deletedUpdate">
-                        <el-option value='0' label="未删除"></el-option>
-                        <el-option value="1" label="已删除"></el-option>
-                    </el-select>
-                </td>
-                <td>
                     是否展示：
                     <el-select v-model="notshowUpdate">
                         <el-option label="展示" value="0"></el-option>
@@ -491,7 +477,6 @@
                 districtAddList: null,
                 streetAddList: null,
                 streetAdd: null,
-                deletedAdd: null,
                 notshowAdd: null,
                 isReportAdd: null,
                 areaTypeAdd: null,
@@ -516,7 +501,6 @@
                 districtUpdateList: null,
                 streetUpdateList: null,
                 streetUpdate: null,
-                deletedUpdate: null,
                 notshowUpdate: null,
                 isReportUpdate: null,
                 areaTypeUpdate: null,
@@ -609,9 +593,13 @@
                 }
                 if (this.deleted != null) {
                     data.deleted = this.deleted;
+                } else {
+                    data.deleted = -1;
                 }
                 if (this.notshow != null) {
                     data.notshow = this.notshow
+                } else {
+                    data.notshow = -1;
                 }
                 if (pageNum != null) {
                     data.pageNum = pageNum;
@@ -709,7 +697,6 @@
                     this.confirmHotelPasswordUpdate = row.hotelPassword,
                     this.controlDateUpdate = row.controlDate,
                     this.reserveDateUpdate = row.reserveDate,
-                    this.deletedUpdate = row.deleted.toString(),
                     this.notshowUpdate = row.notshow.toString(),
                     this.isReportUpdate = row.isReport.toString(),
                     this.areaTypeUpdate = row.areaType.toString()
@@ -792,10 +779,6 @@
                     this.$message.error("请选择街道");
                     return;
                 }
-                if (this.deletedAdd == null || this.deletedAdd == '') {
-                    this.$message.error("请选择是否删除");
-                    return;
-                }
                 if (this.notshowAdd == null || this.notshowAdd == '') {
                     this.$message.error("请选择是否展示");
                     return;
@@ -840,7 +823,6 @@
                     hotelTypes: this.hotelTypesIdList,
                     district: this.districtAdd,
                     street: this.streetAdd,
-                    deleted: this.deletedAdd,
                     notshow: this.notshowAdd,
                     isReport: this.isReportAdd,
                     areaType: this.areaTypeAdd,
@@ -880,7 +862,6 @@
                 this.hotelTypeAddList = null;
                 this.districtAdd = null;
                 this.streetAdd = null;
-                this.deletedAdd = null;
                 this.notshowAdd = null;
                 this.isReportAdd = null;
                 this.areaTypeAdd = null;
@@ -936,10 +917,6 @@
                     this.$message.error("请选择街道");
                     return;
                 }
-                if (this.deletedUpdate == null || this.deletedUpdate == '') {
-                    this.$message.error("请选择是否删除");
-                    return;
-                }
                 if (this.notshowUpdate == null || this.notshowUpdate == '') {
                     this.$message.error("请选择是否展示");
                     return;
@@ -965,8 +942,7 @@
                 data.contractMobile = this.contractMobileUpdate;
                 data.address = this.addressUpdate;
                 data.remark = this.remarkUpdate;
-                data.deleted = this.deletedUpdate,
-                    data.notshow = this.notshowUpdate,
+                data.notshow = this.notshowUpdate,
                     data.isReport = this.isReportUpdate,
                     data.areaType = this.areaTypeUpdate,
                     this.$http.post('http://127.0.0.1:8888/hotel/edit', data, {emulateJSON: true}).then(function (res) {
@@ -990,7 +966,6 @@
                 this.updateId = null;
                 this.districtUpdate = null;
                 this.streetUpdate = null;
-                this.deletedUpdate = null;
                 this.notshowUpdate = null;
                 this.isReportUpdate = null;
                 this.areaTypeUpdate = null;
@@ -1015,7 +990,7 @@
                     } else {
                         this.$message.error("删除失败")
                     }
-                    this.hotelInfoList();
+                    this.hotelInfoList(null, 1);
                 })
             },
             //酒店类型选择(多选)
