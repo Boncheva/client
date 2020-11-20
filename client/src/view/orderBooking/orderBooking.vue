@@ -67,7 +67,8 @@
                         <el-input v-model="oriRemark" placeholder="搜索原始备注"></el-input>
                     </div>
 
-                    <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="orderInfoList()">搜索</el-button>
+                    <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="orderInfoList(null,1)">搜索
+                    </el-button>
                     <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="reset">重置</el-button>
                     <el-button class="layui-btn layui-btn-normal layui-btn-sm" @click="exportOrderInfoList()">导出
                     </el-button>
@@ -209,7 +210,8 @@
                             </td>
                             <td>
                                 <span>入住时间：</span>
-                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间"/>
+                                <el-date-picker v-model="checkinDateUpt" type="date" placeholder="入住时间"
+                                                value-format="yyyy-MM-dd"/>
                             </td>
                             <td>
                                 <span>价格: </span>
@@ -558,7 +560,6 @@
             },
             //获取订单列表
             orderInfoList(pageSize, pageNum) {
-                // console.log(this.checkinDate);
                 let data = {
                     district: this.district,
                     street: this.street,
@@ -572,11 +573,14 @@
                 if (this.status != null) {
                     data.status = this.status;
                 }
-                if (pageNum != null && pageSize != null) {
+                if (pageNum != null) {
                     data.pageNum = pageNum;
-                    data.pageSize = pageSize;
                 } else {
                     data.pageNum = this.currentPage;
+                }
+                if (pageSize != null) {
+                    data.pageSize = pageSize;
+                } else {
                     data.pageSize = this.pageSize;
                 }
                 this.$http.post('http://127.0.0.1:8888/order/list', data, {emulateJSON: true}).then(function (res) {
@@ -678,11 +682,13 @@
                     this.$message.error("请选择来源");
                     return;
                 }
+                console.log(this.checkinDateUpt);
                 this.$http.post('http://127.0.0.1:8888/order/edit', {
                         id: this.id,
                         hotelId: this.hotelIdUpt,
                         houseType: this.houseTypeUpt,
-                        checkinDate: (this.checkinDateUpt == null) || (this.checkinDateUpt == '') ? null : this.$moment(this.checkinDateUpt).format('YYYY-MM-DD'),
+                        // checkinDate: (this.checkinDateUpt == null) || (this.checkinDateUpt == '') ? null : this.$moment(this.checkinDateUpt).format('YYYY-MM-DD'),
+                        checkinDate: this.checkinDateUpt,
                         price: this.housePriceUpt,
                         status: this.statusUpt,
                         deleted: this.deletedUpt,
@@ -892,6 +898,7 @@
             handleAvatarSuccess(res) {
                 if (res.status == 200) {
                     this.$message.success("上传成功")
+                    this.orderInfoList(null, 1);
                 } else {
                     this.$message.error(res.msg)
                 }

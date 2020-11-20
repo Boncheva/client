@@ -66,7 +66,7 @@
                         <el-input v-model="idOrName" placeholder="请输入身份证或者姓名"></el-input>
                     </div>
 
-                    <button class="layui-btn layui-btn-normal layui-btn-sm" @click="appUserList">搜索</button>
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" @click="appUserList(null,1)">搜索</button>
                     <button class="layui-btn layui-btn-normal layui-btn-sm" @click="initForm">重置</button>
                 </div>
 
@@ -348,11 +348,14 @@
                     userType: this.userType,
                     idOrName: this.idOrName
                 }
-                if (pageNum != null && pageSize != null) {
+                if (pageNum != null) {
                     data.pageNum = pageNum;
-                    data.pageSize = pageSize;
                 } else {
                     data.pageNum = this.currentPage;
+                }
+                if (pageSize != null) {
+                    data.pageSize = pageSize;
+                } else {
                     data.pageSize = this.pageSize;
                 }
                 this.$http.post('http://127.0.0.1:8888/userInfo/list', data, {emulateJSON: true}).then(function (res) {

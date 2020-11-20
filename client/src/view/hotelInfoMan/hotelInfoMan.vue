@@ -49,7 +49,7 @@
                 <input type="text" v-model="hotelName" placeholder="搜索酒店名称" class="layui-input">
             </div>
 
-            <button class="layui-btn layui-btn-normal layui-btn-sm" @click="hotelInfoList()">搜索</button>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" @click="hotelInfoList(null,1)">搜索</button>
             <button class="layui-btn layui-btn-normal layui-btn-sm" @click="reset">重置</button>
             <button class="layui-btn layui-btn-normal layui-btn-sm" @click="openAdd">新增</button>
             <div class="supervision-list-table">
@@ -613,11 +613,14 @@
                 if (this.notshow != null) {
                     data.notshow = this.notshow
                 }
-                if (pageNum != null && pageSize != null) {
+                if (pageNum != null) {
                     data.pageNum = pageNum;
-                    data.pageSize = pageSize;
                 } else {
                     data.pageNum = this.currentPage;
+                }
+                if (pageSize != null) {
+                    data.pageSize = pageSize;
+                } else {
                     data.pageSize = this.pageSize;
                 }
                 this.$http.post('http://127.0.0.1:8888/hotel/list', data, {emulateJSON: true}).then(function (res) {

@@ -32,7 +32,6 @@ Vue.http.interceptors.push((request, next) => {
     }
 
     next(response => {
-        console.log(response)
         if (response.body == '401') {
             router.push({path: '../login'});
         }
