@@ -127,12 +127,11 @@ public class OrderServiceImpl implements OrderService {
         Sheet sheet = null;
         Row row = null;
         List<Map<String, String>> list = null;
-        String cellData = null;
         MultipartFile orderListFile = file.get(0);
         String filename = orderListFile.getOriginalFilename();
         String suffixName = filename.substring(filename.lastIndexOf("."));
         filename = UUID.randomUUID() + suffixName;
-        File dest = new File("C:\\Users\\1\\Documents\\upload\\" + filename);
+        File dest = new File(this.getClass().getClassLoader().getResource("").getPath() + "\\" + filename);
         try {
             orderListFile.transferTo(dest);
             FileInputStream is = new FileInputStream(dest);
@@ -145,79 +144,117 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomException("系统错误，上传失败");
         }
         sheet = wb.getSheetAt(0);
-        List<OrderInfo> orderInfoList = new ArrayList<>();
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             row = sheet.getRow(i);
-            Long hotelId = Long.valueOf(nf.format(row.getCell(0).getNumericCellValue()).replace(",", ""));
-            Integer houseType = Integer.parseInt(nf.format(row.getCell(1).getNumericCellValue()).replace(",", ""));
-            Long userId = Long.valueOf(nf.format(row.getCell(2).getNumericCellValue()).replace(",", ""));
-            Integer userType = Integer.valueOf(nf.format(row.getCell(3).getNumericCellValue()).replace(",", ""));
-            String price = String.valueOf(row.getCell(4));
-            String checkinDate = null;
-            LocalDateTime addDate = null;
-            LocalDateTime realCheckinDate = null;
-            LocalDateTime cancelDate = null;
-            LocalDateTime modifyDate = null;
-            LocalDateTime operateDate = null;
-            LocalDateTime checkoutDate = null;
-            LocalDateTime checkDate = null;
-            if (StringUtils.isNotBlank(row.getCell(5).toString())) {
-                checkinDate = String.valueOf(row.getCell(5));
+            if (StringUtils.isBlank(row.getCell(0).toString())) {
+                throw new CustomException("第" + i + "行，酒店id不能为空");
             }
-            if (StringUtils.isNotBlank(row.getCell(7).toString())) {
-                addDate = LocalDateTime.parse(String.valueOf(row.getCell(7)), dTf);
+            double numericCellValue = 0;
+            try {
+                numericCellValue = row.getCell(0).getNumericCellValue();
+            } catch (IllegalStateException ex) {
+                throw new CustomException("第" + i + "行，酒店参数有误，必须为纯数字");
             }
-            if (StringUtils.isNotBlank(row.getCell(8).toString())) {
-                realCheckinDate = LocalDateTime.parse(String.valueOf(row.getCell(8)), dTf);
+            Hotel hotel = hotelMapper.selectById(Long.valueOf(nf.format(numericCellValue)));
+            if (hotel == null) {
+                throw new CustomException("第" + i + "行，酒店不存在");
             }
-            if (StringUtils.isNotBlank(row.getCell(9).toString())) {
-                cancelDate = LocalDateTime.parse(String.valueOf(row.getCell(9)), dTf);
+            if (hotel.getDeleted()) {
+                throw new CustomException("第" + i + "行，酒店已删除");
             }
-            if (StringUtils.isNotBlank(row.getCell(10).toString())) {
-                modifyDate = LocalDateTime.parse(String.valueOf(row.getCell(10)), dTf);
+            Long hotelId = Long.valueOf(nf.format(numericCellValue));
+
+            if (StringUtils.isBlank(row.getCell(1).toString())) {
+                throw new CustomException("第" + i + "行，房间类型不能为空");
             }
-            if (StringUtils.isNotBlank(row.getCell(13).toString())) {
-                operateDate = LocalDateTime.parse(String.valueOf(row.getCell(13)), dTf);
+            Integer in = 0;
+            try {
+                in = Integer.parseInt(row.getCell(1).toString());
+            } catch (NumberFormatException ex) {
+                throw new CustomException("第" + i + "行，房间类型有误，必须为纯数字");
             }
-            if (StringUtils.isNotBlank(row.getCell(14).toString())) {
-                checkoutDate = LocalDateTime.parse(String.valueOf(row.getCell(14)), dTf);
+            String type = houseTypeCode.getType(in);
+            if (type == null) {
+                throw new CustomException("第" + i + "行，房间类型不存在");
             }
-            if (StringUtils.isNotBlank(row.getCell(17).toString())) {
-                checkDate = LocalDateTime.parse(String.valueOf(row.getCell(17)), dTf);
+            Integer houseType = in;
+
+            //用户id验证
+            if (StringUtils.isBlank(row.getCell(2).toString())) {
+                throw new CustomException("第" + i + "行，用户id不能为空");
             }
-            Integer status = Integer.valueOf(nf.format(row.getCell(6).getNumericCellValue()).replace(",", ""));
-            Integer deleted = Integer.valueOf(String.valueOf(row.getCell(11)));
-            String operateUser = String.valueOf(row.getCell(12));
-            String roomNum = String.valueOf(row.getCell(15));
-            String remark = String.valueOf(row.getCell(16));
-            String checkUser = String.valueOf(row.getCell(18));
-            String checkReason = String.valueOf(row.getCell(19));
-            Integer fromType = Integer.valueOf(String.valueOf(row.getCell(20)));
-            String oriRemark = String.valueOf(row.getCell(21));
+            long l;
+            try {
+                l = Long.parseLong(row.getCell(2).toString());
+            } catch (NumberFormatException ex) {
+                throw new CustomException("第" + i + "行，用户id必须为纯数字");
+            }
+            User user = userMapper.selectById(l);
+            if (user == null) {
+                throw new CustomException("第" + i + "行，用户不存在");
+            }
+            if (user.getDeleted() == 1) {
+                throw new CustomException("第" + i + "行，用户已删除");
+            }
+            Long userId = l;
+
+            //价格验证
+            if (StringUtils.isBlank(row.getCell(3).toString())) {
+                throw new CustomException("第" + i + "行，房间价格不能为空");
+            }
+            double v;
+            try {
+                v = Double.parseDouble(row.getCell(3).toString());
+            } catch (NumberFormatException ex) {
+                throw new CustomException("第" + i + "行，房间价格必须为数字");
+            }
+            String price = String.valueOf(v);
+
+            //入住日期验证
+            if (StringUtils.isBlank(row.getCell(4).toString())) {
+                throw new CustomException("第" + i + "行，入住日期不能为空");
+            }
+            LocalDate localDate;
+            try {
+                localDate = LocalDate.parse(row.getCell(4).toString(), df);
+            } catch (DateTimeParseException ex) {
+                throw new CustomException("第" + i + "行，入住日期格式不正确");
+            }
+            LocalDate checkinDate = localDate;
+
+            //状态验证
+            if (StringUtils.isBlank(row.getCell(5).toString())) {
+                throw new CustomException("第" + i + "行，状态不能为空");
+            }
+            Integer i1;
+            try {
+                i1 = Integer.parseInt(row.getCell(5).toString());
+            } catch (NumberFormatException ex) {
+                throw new CustomException("第" + i + "行，状态必须为数字");
+            }
+            String s = orderStatusCode.getStatus(i1);
+            if (s == null) {
+                throw new CustomException("第" + i + "行，状态不存在");
+            }
+            int status = i1;
+
+            //房号验证
+            if (StringUtils.isBlank(row.getCell(6).toString())) {
+                throw new CustomException("第" + i + "行，房间号不能为空");
+            }
+            String roomNum = row.getCell(6).toString();
             OrderInfo orderInfo = new OrderInfo();
-            orderInfo.setId(new Date().getTime());
             orderInfo.setHotelId(hotelId);
             orderInfo.setHouseType(houseType);
-            orderInfo.setUserId(userId);
-            orderInfo.setUserType(userType);
-            orderInfo.setPrice(price);
-//            orderInfo.setCheckinDate(checkinDate);
-            orderInfo.setAddDate(addDate);
-            orderInfo.setRealCheckinDate(realCheckinDate);
-            orderInfo.setCancelDate(cancelDate);
-            orderInfo.setModifyDate(modifyDate);
-            orderInfo.setOperateDate(operateDate);
-            orderInfo.setCheckDate(checkDate);
-            orderInfo.setCheckoutDate(checkoutDate);
             orderInfo.setStatus(status);
-            orderInfo.setDeleted(deleted);
-            orderInfo.setOperateUser(operateUser);
+            orderInfo.setUserId(userId);
+            orderInfo.setPrice(price);
+            orderInfo.setCheckinDate(checkinDate);
             orderInfo.setRoomNum(roomNum);
-            orderInfo.setRemark(remark);
-            orderInfo.setCheckUser(checkUser);
-            orderInfo.setCheckReason(checkReason);
-            orderInfo.setFromType(fromType);
-            orderInfo.setOriRemark(oriRemark);
+            //来源为导入
+            orderInfo.setFromType(2);
+            orderInfo.setAddDate(LocalDateTime.now());
+            orderInfo.setDeleted(0);
             int insert = orderInfoMapper.insert(orderInfo);
             if (insert <= 0) {
                 throw new CustomException("插入数据失败");

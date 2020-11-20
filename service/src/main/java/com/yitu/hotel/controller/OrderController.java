@@ -196,11 +196,7 @@ public class OrderController {
     @ApiOperation(value = "批量上传订单信息")
     @RequestMapping(value = "upload", method = RequestMethod.POST)
     public JsonResult uploadOrderListInfo(List<MultipartFile> file) {
-        try {
-            orderService.uploadOrderListInfo(file);
-        } catch (RuntimeException e) {
-            return JsonResult.fail("上传失败");
-        }
+        orderService.uploadOrderListInfo(file);
         return JsonResult.ok();
     }
 
